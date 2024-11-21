@@ -1,46 +1,57 @@
 -- USER TABLE
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
+    first_name VARCHAR(255) NOT NULL,
+    last_name VARCHAR(255) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
+    pfp VARCHAR(255) ,
     password VARCHAR(255) NOT NULL,
-    role ENUM('Admin', 'Employee', 'Normal User') NOT NULL
+    role ENUM('Admin', 'Employee', 'User') NOT NULL
 );
 
--- HALL TABLE
-CREATE TABLE halls (
+-- ADMIN TABLE (Inherits from Users)
+CREATE TABLE admins (
+    id INT PRIMARY KEY,
+    stripe_id VARCHAR(255) UNIQUE NOT NULL,
+    FOREIGN KEY (id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- compound TABLE
+CREATE TABLE compounds (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    location VARCHAR(255),
+    compound_name VARCHAR(255) NOT NULL,
+    compound_location VARCHAR(255),
     capacity INT,
     admin_id INT NOT NULL,
     FOREIGN KEY (admin_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 -- HALL-EMPLOYEE (MANY-TO-MANY) TABLE
-CREATE TABLE hall_employees (
+CREATE TABLE compound_employees (
     id SERIAL PRIMARY KEY,
-    hall_id INT NOT NULL,
+    compound_id INT NOT NULL,
     employee_id INT NOT NULL,
-    FOREIGN KEY (hall_id) REFERENCES halls(id) ON DELETE CASCADE,
+    FOREIGN KEY (compound_id) REFERENCES compounds(id) ON DELETE CASCADE,
     FOREIGN KEY (employee_id) REFERENCES users(id) ON DELETE CASCADE,
-    UNIQUE (hall_id, employee_id) -- Prevent duplicate assignments
+    UNIQUE (compound_id, employee_id)
 );
 
--- STOCK TABLE
 CREATE TABLE stocks (
     id SERIAL PRIMARY KEY,
-    hall_id INT UNIQUE, -- Each hall has one stock
-    event_id INT UNIQUE, -- Each event has one stock
-    FOREIGN KEY (hall_id) REFERENCES halls(id) ON DELETE SET NULL,
-    FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE SET NULL
+    compound_id INT UNIQUE,
+    event_id INT UNIQUE,
+    FOREIGN KEY (compound_id) REFERENCES compounds(id) ON DELETE CASCADE,
+    FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE,
+    CONSTRAINT check_at_least_one_not_null CHECK (
+        compound_id IS NOT NULL OR event_id IS NOT NULL
+    )
 );
 
 -- STOCK ITEMS TABLE
 CREATE TABLE stock_items (
     id SERIAL PRIMARY KEY,
     stock_id INT NOT NULL,
-    name VARCHAR(255) NOT NULL,
+    item_name VARCHAR(255) NOT NULL,
     quantity INT DEFAULT 0,
     FOREIGN KEY (stock_id) REFERENCES stocks(id) ON DELETE CASCADE
 );
@@ -48,11 +59,22 @@ CREATE TABLE stock_items (
 -- EVENT TABLE
 CREATE TABLE events (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    description TEXT,
-    date DATE NOT NULL,
-    hall_id INT NOT NULL,
-    FOREIGN KEY (hall_id) REFERENCES halls(id) ON DELETE CASCADE
+    event_name VARCHAR(255) NOT NULL,
+    event_description TEXT NOT NULL,
+    event_start_date DATE NOT NULL,
+    event_end_date DATE NOT NULL,
+    compound_id INT NOT NULL,
+    FOREIGN KEY (compound_id) REFERENCES compounds(id) ON DELETE CASCADE
+);
+
+-- PROGRAM TABLE
+CREATE TABLE event_program(
+    id SERIAL PRIMARY KEY,
+    program_description TEXT NOT NULL,
+    start_program_date DATETIME NOT NULL,
+    end_program_date DATETIME NOT NULL,
+    event_id INT NOT NULL,
+    FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE
 );
 
 -- EVENT-EMPLOYEE (MANY-TO-MANY) TABLE
@@ -62,7 +84,7 @@ CREATE TABLE event_employees (
     employee_id INT NOT NULL,
     FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE,
     FOREIGN KEY (employee_id) REFERENCES users(id) ON DELETE CASCADE,
-    UNIQUE (event_id, employee_id) -- Prevent duplicate assignments
+    UNIQUE (event_id, employee_id)
 );
 
 -- RESERVATION TABLE
@@ -70,11 +92,11 @@ CREATE TABLE reservations (
     id SERIAL PRIMARY KEY,
     user_id INT NOT NULL,
     event_id INT NOT NULL,
-    hall_id INT NOT NULL,
+    compound_id INT NOT NULL,
     reserved_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE,
-    FOREIGN KEY (hall_id) REFERENCES halls(id) ON DELETE CASCADE
+    FOREIGN KEY (compound_id) REFERENCES compounds(id) ON DELETE CASCADE
 );
 
 -- COMMENTS TABLE
