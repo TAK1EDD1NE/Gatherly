@@ -3,10 +3,10 @@ import express from 'express';
 // import ROLES from '../utils/roles.js'
 import { signup, login } from '../controllers/User.js';
 
-const userRoutes = express.Router();
+const userRoutes = express.Router()
 
-userRoutes.post('/login', login);
-userRoutes.post('/signup', signup);
+userRoutes.post('/login', login)
+userRoutes.post('/signup', signup)
 
 
 
