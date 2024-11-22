@@ -1,0 +1,24 @@
+
+###
+POST http://localhost:8080/api/user/signup
+Content-Type: application/json
+
+{
+    "first_name":"nigga",
+    "last_name":"nigga",
+    "email": "man",
+    "password" : "i said man",
+    "pfp" : ""
+}
+
+
+
+###
+
+POST http://localhost:8080/api/user/login HTTP/1.1
+Content-Type: application/json
+
+{
+    "email": "man",
+    "password": "i said man"
+}

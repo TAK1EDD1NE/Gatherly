@@ -9,7 +9,7 @@ CREATE TABLE users (
     email VARCHAR(255) UNIQUE NOT NULL,
     pfp VARCHAR(255),
     password VARCHAR(255) NOT NULL,
-    role user_role NOT NULL
+    role user_role DEFAULT 'User' NOT NULL 
 );
 
 -- ADMIN TABLE (Inherits from Users)

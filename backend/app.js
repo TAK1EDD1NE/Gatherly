@@ -3,9 +3,9 @@ import cors from 'cors'
 import * as dotenv from 'dotenv'
 import cookieParser from "cookie-parser"
 //import errorHandler from './middlewares/errorHandler.js'
-import pool from '../lib/db.js'
-
-
+import pool from '../backend/lib/db.js'
+import errorHandler from '../backend/middleware/errorHandler.js'
+import userRoutes from './routes/User.js'
 
 dotenv.config()
 
@@ -29,3 +29,18 @@ try {
   } catch (err) {
     console.log('Error of Connection to DB', err)
   }
+
+
+app.use('/api/user/',userRoutes)
+app.get('/users' , async (req, res , next)=>{
+  try{
+      const db_res = await pool.query('SELECT * FROM users')
+      console.log(db_res.rows);
+      
+      res.json(db_res.rows)
+  }catch(err){
+      next(err)
+  }})
+
+
+app.use(errorHandler)

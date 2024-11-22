@@ -1,7 +1,7 @@
 import pg from 'pg';
 const { Pool } = pg;
 import * as dotenv from 'dotenv'
-import errorHandler from '../middleware/errorHandler';
+import errorHandler from '../middleware/errorHandler.js';
 
 dotenv.config()
 
