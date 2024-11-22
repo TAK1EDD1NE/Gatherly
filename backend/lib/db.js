@@ -1,6 +1,7 @@
 import pg from 'pg';
 const { Pool } = pg;
 import * as dotenv from 'dotenv'
+import errorHandler from '../middleware/errorHandler';
 
 dotenv.config()
 
@@ -14,10 +15,10 @@ const pool = new Pool({
 
 const testDbConnection = async () => {
   try {
-    const res = await pool.query('SELECT NOW()');
-    console.log('Connected to the database on port :', process.env.DB_PORT);
+    await pool.query('SELECT NOW()')
+    console.log('Connected to the database on port :', process.env.DB_PORT )
   } catch (err) {
-    console.error('Database connection error:', err.message);
+    errorHandler(err)
   }
 };
 testDbConnection()
