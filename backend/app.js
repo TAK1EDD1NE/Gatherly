@@ -3,7 +3,7 @@ import cors from 'cors'
 import * as dotenv from 'dotenv'
 import cookieParser from "cookie-parser"
 //import errorHandler from './middlewares/errorHandler.js'
-//import pool from '../lib/db.js'
+import pool from '../lib/db.js'
 
 
 
