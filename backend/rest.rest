@@ -4,10 +4,10 @@ POST http://localhost:8080/api/user/signup
 Content-Type: application/json
 
 {
-    "first_name":"nigga",
-    "last_name":"nigga",
-    "email": "man",
-    "password" : "i said man",
+    "first_name":"takie",
+    "last_name":"man",
+    "email": "hesdkf@gmail.com",
+    "password" : "i said mat",
     "pfp" : ""
 }
 

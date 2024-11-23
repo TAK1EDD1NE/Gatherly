@@ -1,13 +1,17 @@
-// import jwt from 'jsonwebtoken'
+import jwt from 'jsonwebtoken'
 // import cloudinary from '../api/cloudinary.js'
 import pool from '../lib/db.js'
 import bcrypt from 'bcrypt'
 
 
+const  generate_token= (user_id) => {
+  return jwt.sign(user_id , process.env.ACCESS_TOKEN_SECRET)
+}
+
 export const signup = async (req, res, next) => {
     try{
         const {first_name , last_name , email, pfp , password} = req.body
-        
+
         const hashed_password = await bcrypt.hash(password , 10)
         
         const query = 'INSERT INTO users (first_name, last_name, email,pfp , password ) VALUES ($1, $2, $3, $4, $5)';
@@ -30,6 +34,16 @@ export const login = async(req, res, next) => {
           return res.status(400).send('cannot find the user!')
         }    
         const pwd_correct = await bcrypt.compare(password, user.password) 
+        
+        const token = generate_token(user.id)
+        res.cookie('tigerToken', token, {
+          httpOnly: true,
+          expires: new Date(Date.now() + 864e5),
+          secure: true,
+          sameSite: 'none',
+          path: '/'
+        })
+        
         if (pwd_correct){
           res.status(200).send('success')
         }else{
