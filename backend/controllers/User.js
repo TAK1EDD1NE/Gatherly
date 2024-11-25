@@ -46,6 +46,7 @@ export const login = async(req, res, next) => {
       const token = generate_token(user.id)
       res.cookie('tigerToken', token, {
         
+
         httpOnly: true,
         expires: new Date(Date.now() + 864e5),
         secure: true,
