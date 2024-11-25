@@ -73,3 +73,27 @@ export const login = async(req, res, next) => {
       next(err)
     }
 }
+
+export const get_user_by_id = async(req, res ,next) =>{
+  try{
+
+  }catch(err){
+    next(err)
+  }
+}
+
+
+export const signout = async (req, res, next) => {
+
+  try {
+    res.cookie('tigerToken', '', {
+      expires: new Date(0),
+      sameSite: 'none',
+      secure: true
+    })
+    res.status(200).json({message: 'successfuly logged out'})
+  } catch (err) {
+    next(err)
+  }
+
+}
