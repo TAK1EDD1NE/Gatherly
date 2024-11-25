@@ -22,3 +22,13 @@ Content-Type: application/json
     "email": "takieeddine@gmail.com",
     "password": "takieeddine"
 }
+
+###
+
+GET http://localhost:8080/api/user/get-user-by-id/254 HTTP/1.1
+Content-Type: application/json
+
+###
+
+DELETE http://localhost:8080/api/user/delete HTTP/1.1
+Content-Type: application/json

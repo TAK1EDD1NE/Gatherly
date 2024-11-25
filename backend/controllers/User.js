@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken'
 import pool from '../lib/db.js'
 import bcrypt from 'bcrypt'
 import cloudinary from '../api/cloudinary.js'
+import { query } from 'express'
 
 const  generate_token= (user_id) => {
   return jwt.sign(user_id , process.env.ACCESS_TOKEN_SECRET)
@@ -50,7 +51,7 @@ export const login = async(req, res, next) => {
       const values = [email]
       const user = (await pool.query(query, values)).rows[0]
       if (!user){
-        return res.status(400).send('cannot find the user!')
+        return res.status(404).send('cannot find the user!')
       }    
       const pwd_correct = await bcrypt.compare(password, user.password) 
       
@@ -58,7 +59,7 @@ export const login = async(req, res, next) => {
       res.cookie('tigerToken', token, {
         httpOnly: true,
         expires: new Date(Date.now() + 864e5),
-        secure: true,
+        // secure: true,
         sameSite: 'none',
         path: '/'
       })
@@ -76,7 +77,17 @@ export const login = async(req, res, next) => {
 
 export const get_user_by_id = async(req, res ,next) =>{
   try{
-
+    const {user_id} = req.params
+    
+    const query = 'SELECT * FROM users WHERE id = $1'
+    const user = (await pool.query(query , [user_id])).rows[0]
+    
+    if(!user){
+      res.status(404)
+      throw Error('user not found.')
+    }
+    
+    return res.json(user)
   }catch(err){
     next(err)
   }
@@ -95,5 +106,19 @@ export const signout = async (req, res, next) => {
   } catch (err) {
     next(err)
   }
+}
 
+export const remove = async (req, res, next)=>{
+  try{
+    
+    const {id: user_id} = req.user
+    
+    const rows_affected = (await pool.query('DELETE FROM users WHERE id = $1', [user_id])).rowCount
+    if (rows_affected == 0){
+      return res.status(500).json({message: 'server error'})
+    }
+    return res.status(200).json({message: 'successfuly logged out'})
+  }catch(err){
+    next(err)
+  }
 }
