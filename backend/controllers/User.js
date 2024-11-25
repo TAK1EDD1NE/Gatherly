@@ -30,3 +30,35 @@ export const signup = async (req, res, next) => {
         next(err)
       }
 }
+
+export const login = async(req, res, next) => {
+  try{        
+      const {email, password} = req.body
+          
+      const query = 'SELECT * FROM users WHERE email = $1'
+      const values = [email]
+      const user = (await pool.query(query, values)).rows[0]
+      if (!user){
+        return res.status(400).send('cannot find the user!')
+      }    
+      const pwd_correct = await bcrypt.compare(password, user.password) 
+      
+      const token = generate_token(user.id)
+      res.cookie('tigerToken', token, {
+        httpOnly: true,
+        expires: new Date(Date.now() + 864e5),
+        secure: true,
+        sameSite: 'none',
+        path: '/'
+      })
+      
+      if (pwd_correct){
+        res.status(200).send('success')
+      }else{
+        res.status(400).send('try again something is wrong!')
+      }
+      res.status(201).send()
+    }catch(err){
+      next(err)
+    }
+}
