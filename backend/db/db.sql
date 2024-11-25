@@ -8,7 +8,7 @@ CREATE TABLE users (
     last_name VARCHAR(255) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
     pfp VARCHAR(255),
-    password VARCHAR(255) NOT NULL,
+    password TEXT NOT NULL,
     role user_role DEFAULT 'User' NOT NULL 
 );
 
