@@ -128,7 +128,23 @@ export const update_photo = async (req, res, next) =>{
     next(err)
   }
 }
-
+export const update_password = async (req, res, next)=>{
+  try{
+    const user = req.user
+    const {new_password} = req.body
+    
+    if (new_password.length < 8){
+      res.status(400)
+      throw new Error('password should contain more than 8 characters')
+    }
+    const hashed_password = await bcrypt.hash(new_password , 10)
+    
+    await pool.query('UPDATE users SET password = $1 WHERE id = $2', [hashed_password, user.id])
+    return res.status(201).json({message:"photo has been updated"})
+  }catch(err){
+    next(err)
+  }
+}
 
 
 export const signout = async (req, res, next) => {
