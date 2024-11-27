@@ -107,6 +107,27 @@ export const update_name = async(req, res, next) =>{
     next(err)
   }
 }
+export const update_photo = async (req, res, next) =>{
+  try{
+    const user = req.user
+    const {photo} = req.body
+    
+    if (!photo){
+      return res.status(200).json({message:"nothing has changed."})
+    }
+    const {secure_url: pfp} = await cloudinary.uploader.upload(photo, {
+      folder: "gatherly",
+      width: 200,
+      height: 200,
+      crop: 'fill',
+      gravity: 'face'
+    })
+    await pool.query('UPDATE users SET pfp = $1 WHERE id = $2', [pfp, user.id])
+    return res.status(201).json({message:"photo has been updated"})
+  }catch(err){
+    next(err)
+  }
+}
 
 
 
