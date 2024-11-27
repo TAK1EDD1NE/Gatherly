@@ -1,9 +1,7 @@
 import jwt from 'jsonwebtoken'
-// import cloudinary from '../api/cloudinary.js'
 import pool from '../lib/db.js'
 import bcrypt from 'bcrypt'
 import cloudinary from '../api/cloudinary.js'
-import { query } from 'express'
 
 const  generate_token= (user_id) => {
   return jwt.sign(user_id , process.env.ACCESS_TOKEN_SECRET)
@@ -92,6 +90,24 @@ export const get_user_by_id = async(req, res ,next) =>{
     next(err)
   }
 }
+
+export const update_name = async(req, res, next) =>{
+  try{
+    const user = req.user
+    const {first_name, last_name} = req.body
+    
+    if (!first_name && !last_name ){
+      return res.status(200).json({message:"nothing has changed."})
+    }
+    first_name = first_name || user.first_name
+    last_name = last_name || user.last_name
+    await pool.query('UPDATE users SET first_name = $1, last_name = $2 WHERE id = $3', [first_name, last_name , user.id])
+    return res.status(201).json({message:"name has been updated"})
+  }catch(err){
+    next(err)
+  }
+}
+
 
 
 export const signout = async (req, res, next) => {
