@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser"
 import pool from '../backend/lib/db.js'
 import errorHandler from '../backend/middleware/errorHandler.js'
 import userRoutes from './routes/User.js'
+import adminRoutes from './routes/Admin.js'
 
 dotenv.config()
 
@@ -32,15 +33,7 @@ try {
 
 
 app.use('/api/user/',userRoutes)
-app.get('/users' , async (req, res , next)=>{
-  try{
-      const db_res = await pool.query('SELECT * FROM users')
-      console.log(db_res.rows);
-      
-      res.json(db_res.rows)
-  }catch(err){
-      next(err)
-  }})
+app.use('/api/admin/', adminRoutes)
 
 
 app.use(errorHandler)
