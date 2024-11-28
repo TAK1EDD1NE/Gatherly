@@ -8,7 +8,7 @@ import cloudinary from '../api/cloudinary.js'
   export const join_as_admin = async (req, res, next)=> {
     try {
         const {id: user_id} = req.user
-        const { stripe_id } = req.body;
+        const { stripe_id } = req.body
         await pool.query('UPDATE users SET role = $1 WHERE id = $2',['Admin', user_id])
         await pool.query('INSERT INTO admins (id, stripe_id) VALUES ($1, $2)',[user_id, stripe_id]);
         res.status(201).json({ message: 'Successfully joined as admin' });
@@ -17,87 +17,51 @@ import cloudinary from '../api/cloudinary.js'
     }
   }
 
-class AdminController {
 
 
-
-
-  // Create Employee
-  async createEmployee(req, res) {
+  export const create_employee = async (req, res, next)=> {
     try {
-      const { 
-        firstName, 
-        lastName, 
-        email, 
-        password, 
-      } = req.body;
+      const { first_name, last_name, email, password } = req.body
 
-      // Check if email already exists
-      const emailCheck = await client.query(
-        'SELECT * FROM users WHERE email = $1',
-        [email]
-      );
+      const email_check = (await client.query('SELECT * FROM users WHERE email = $1',[email])).rows
 
-      if (emailCheck.rows.length > 0) {
-        return res.status(400).json({ message: 'Email already exists' });
+      if (email_check.length > 0) {
+        res.status(400)
+        throw new Error('Email already exists')
       }
-
-      // Hash password
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      // Insert new employee
-      const result = await client.query(
-        `INSERT INTO users 
-        (first_name, last_name, email, password, role, pfp) 
-        VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
-        [
-          firstName, 
-          lastName, 
-          email, 
-          hashedPassword, 
-          'Employee', 
-          pfp || null
-        ]
-      );
+      const result = await pool.query(
+        `INSERT INTO users (first_name, last_name, email, password, role) VALUES ($1, $2, $3, $4, $5) RETURNING id`,
+        [first_name, last_name, email, hashedPassword, 'Employee']);
 
-      res.status(201).json({ 
-        message: 'Employee created successfully', 
-        employeeId: result.rows[0].id 
-      });
+      res.status(201).json({ message: 'Employee created successfully', employee_id: result.rows[0].id });
     } catch (error) {
-      console.error('Error creating employee:', error);
-      res.status(500).json({ message: 'Internal server error' });
-    } finally {
-      client.release();
+      next(error)
     }
   }
 
-  // Create Compound with Gallery and Stock
-  async createCompound(req, res) {
-    const client = await this.pool.connect();
+
+
+
+
+
+
+class AdminController {
+
+  async createCompound(req, res, next) {
     try {
-      await client.query('BEGIN');
+      const { name, location, capacity, adminId, images, stockItems } = req.body;
 
-      const { 
-        name, 
-        location, 
-        capacity, 
-        adminId, 
-        images,
-        stockItems 
-      } = req.body;
-
-      // Create Compound
-      const compoundResult = await client.query(
+      const compoundResult = await pool.query(
         'INSERT INTO compounds (name, location, capacity, admin_id) VALUES ($1, $2, $3, $4) RETURNING id',
-        [name, location, capacity, adminId]
-      );
+        [name, location, capacity, adminId]);
       const compoundId = compoundResult.rows[0].id;
 
       // Add Gallery Images
       if (images && images.length > 0) {
         const galleryQueries = images.map((imageUrl) => 
-          client.query(
+          pool.query(
             'INSERT INTO galleries (image_url, compound_id) VALUES ($1, $2)',
             [imageUrl, compoundId]
           )
@@ -117,32 +81,16 @@ class AdminController {
         const stockItemQueries = stockItems.map((item) => 
           client.query(
             `INSERT INTO stock_items 
-            (stock_id, name, description, quantity, unit_price) 
+            (stock_id, name, description, quantity, unit_price)
             VALUES ($1, $2, $3, $4, $5)`,
-            [
-              stockId, 
-              item.name, 
-              item.description || null, 
-              item.quantity || 0, 
-              item.unitPrice || 0
-            ]
+            [stockId, item.name, item.description || null, item.quantity || 0, item.unitPrice || 0]
           )
         );
         await Promise.all(stockItemQueries);
       }
-
-      await client.query('COMMIT');
-
-      res.status(201).json({ 
-        message: 'Compound created successfully', 
-        compoundId 
-      });
-    } catch (error) {
-      await client.query('ROLLBACK');
-      console.error('Error creating compound:', error);
-      res.status(500).json({ message: 'Internal server error' });
-    } finally {
-      client.release();
+      return res.status(201).json({ message: 'Compound created successfully', compoundId });
+    } catch (err) {
+      next(err)
     }
   }
 
