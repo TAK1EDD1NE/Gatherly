@@ -1,7 +1,7 @@
 const ROLES = {
-    user: ['user'],
-    admin: ['admin'],
-    employee: ['employee'],
-    all: ['user', 'admin' , 'employee']
+    user: ['User'],
+    admin: ['Admin'],
+    employee: ['Employee'],
+    all: ['User', 'Admin' , 'Employee']
   }
   export default ROLES

@@ -35,7 +35,7 @@ export const signup = async (req, res, next) => {
         const query = 'INSERT INTO users (first_name, last_name, email, pfp, password ) VALUES ($1, $2, $3, $4, $5)'
         const values = [ first_name, last_name , email, avatar, hashed_password]
         await pool.query(query, values)
-        return res.status(201).send()
+        res.status(201).json({message :"user created successfully."})
       }catch(err){
         next(err)
       }
@@ -94,13 +94,13 @@ export const get_user_by_id = async(req, res ,next) =>{
 export const update_name = async(req, res, next) =>{
   try{
     const user = req.user
-    const {first_name, last_name} = req.body
+    const {new_first_name, new_last_name} = req.body
     
-    if (!first_name && !last_name ){
+    if (!new_first_name && !new_last_name ){
       return res.status(200).json({message:"nothing has changed."})
     }
-    first_name = first_name || user.first_name
-    last_name = last_name || user.last_name
+    const first_name = new_first_name || user.first_name
+    const last_name = new_last_name || user.last_name
     await pool.query('UPDATE users SET first_name = $1, last_name = $2 WHERE id = $3', [first_name, last_name , user.id])
     return res.status(201).json({message:"name has been updated"})
   }catch(err){
@@ -140,7 +140,7 @@ export const update_password = async (req, res, next)=>{
     const hashed_password = await bcrypt.hash(new_password , 10)
     
     await pool.query('UPDATE users SET password = $1 WHERE id = $2', [hashed_password, user.id])
-    return res.status(201).json({message:"photo has been updated"})
+    return res.status(201).json({message:"pwd has been updated"})
   }catch(err){
     next(err)
   }
@@ -168,7 +168,8 @@ export const remove = async (req, res, next)=>{
     
     const rows_affected = (await pool.query('DELETE FROM users WHERE id = $1', [user_id])).rowCount
     if (rows_affected == 0){
-      return res.status(500).json({message: 'server error'})
+      res.status(500)
+      throw new Error("server error.")
     }
     return res.status(200).json({message: 'successfuly logged out'})
   }catch(err){
