@@ -134,13 +134,18 @@ CREATE TABLE reviews (
     user_id INT NOT NULL,
     compound_id INT NOT NULL,
     comment TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (compound_id) REFERENCES compounds(id) ON DELETE CASCADE
+);
+-- ratings table
+CREATE TABLE ratings(
+    review_id INT PRIMARY KEY,
     serving_rating INT CHECK (serving_rating BETWEEN 1 AND 5),
     cleanliness_rating INT CHECK (cleanliness_rating BETWEEN 1 AND 5),
     comfort_rating INT CHECK (comfort_rating BETWEEN 1 AND 5),
     logistics_rating INT CHECK (logistics_rating BETWEEN 1 AND 5),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (compound_id) REFERENCES compounds(id) ON DELETE CASCADE
+    FOREIGN KEY (review_id) REFERENCES reviews(id) ON DELETE CASCADE
 );
 
 -- NOTIFICATIONS TABLE
@@ -154,3 +159,131 @@ CREATE TABLE notifications (
     FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (receiver_id) REFERENCES users(id) ON DELETE CASCADE
 );
+
+
+
+
+
+-- the dbdiagram io code for the db
+
+
+-- Table users {
+--     id SERIAL [pk]
+--     first_name VARCHAR(255)
+--     last_name VARCHAR(255)
+--     email VARCHAR(255)
+--     pfp VARCHAR(255)
+--     password VARCHAR(255)
+--     role ENUM('Admin', 'Employee', 'User')
+-- }
+
+-- Table admins {
+--     id INT [pk, ref: > users.id]
+--     stripe_id VARCHAR(255)
+-- }
+
+-- Table compounds {
+--     id SERIAL [pk]
+--     name VARCHAR(255)
+--     location VARCHAR(255)
+--     capacity INT
+--     admin_id INT [ref: > users.id]
+-- }
+
+-- Table compound_employees {
+--     id SERIAL [pk]
+--     compound_id INT [ref: > compounds.id]
+--     employee_id INT [ref: > users.id]
+-- }
+
+-- Table galleries {
+--     id SERIAL [pk]
+--     image_url TEXT
+--     compound_id INT [ref: > compounds.id]
+-- }
+
+-- Table events {
+--     id SERIAL [pk]
+--     name VARCHAR(255)
+--     description TEXT
+--     start_date TIMESTAMP
+--     end_date TIMESTAMP
+--     compound_id INT [ref: > compounds.id]
+-- }
+
+-- Table guest_lists {
+--     id SERIAL [pk]
+--     guest_name VARCHAR(255)
+--     event_id INT [ref: > events.id]
+-- }
+
+-- Table event_program {
+--     id SERIAL [pk]
+--     description TEXT
+--     start_time TIMESTAMP
+--     end_time TIMESTAMP
+--     event_id INT [ref: > events.id]
+-- }
+
+-- Table tasks {
+--     id SERIAL [pk]
+--     description TEXT
+-- }
+
+-- Table event_employees_tasks {
+--     id SERIAL [pk]
+--     event_id INT [ref: > events.id]
+--     employee_id INT [ref: > users.id]
+--     task_id INT [ref: > tasks.id]
+-- }
+
+-- Table stocks {
+--     id SERIAL [pk]
+--     compound_id INT [ref: > compounds.id]
+--     event_id INT [ref: > events.id]
+-- }
+
+-- Table stock_items {
+--     id SERIAL [pk]
+--     stock_id INT [ref: > stocks.id]
+--     name VARCHAR(255)
+--     description TEXT
+--     quantity INT
+--     unit_price INT
+-- }
+
+-- Table reservations {
+--     id SERIAL [pk]
+--     user_id INT [ref: > users.id]
+--     event_id INT [ref: > events.id]
+--     compound_id INT [ref: > compounds.id]
+--     reserved_at TIMESTAMP
+--     payment_intent_id TEXT
+-- }
+
+-- Table reviews {
+--     id SERIAL [pk]
+--     user_id INT [ref: > users.id]
+--     compound_id INT [ref: > compounds.id]
+--     comment TEXT
+    
+--     created_at TIMESTAMP
+-- }
+
+-- Table ratings{
+--   id SERIAL [pk , ref: > reviews.id]
+--   serving_rating INT    
+--   cleanliness_rating INT
+--   comfort_rating INT
+--   logistics_rating INT
+  
+-- }
+
+-- Table notifications {
+--     id SERIAL [pk]
+--     sender_id INT [ref: > users.id]
+--     receiver_id INT [ref: > users.id]
+--     seen BOOLEAN
+--     note TEXT
+--     created_at TIMESTAMP
+-- }
