@@ -23,11 +23,20 @@ CREATE TABLE admins (
 CREATE TABLE compounds (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
-    location VARCHAR(255),
     capacity INT CHECK (capacity > 0),
     admin_id INT NOT NULL,
     FOREIGN KEY (admin_id) REFERENCES users(id) ON DELETE CASCADE
 );
+
+-- LOCATION TABLE
+CREATE TABLE locations (
+    id INT PRIMARY KEY,      
+    x NUMERIC NOT NULL,            
+    y NUMERIC NOT NULL,            
+    FOREIGN KEY (id) REFERENCES compounds(id) ON DELETE CASCADE
+);
+
+
 
 -- COMPOUND EMPLOYEES TABLE (MANY-TO-MANY)
 CREATE TABLE compound_employees (
