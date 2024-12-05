@@ -194,9 +194,14 @@ CREATE TABLE notifications (
 -- Table compounds {
 --     id SERIAL [pk]
 --     name VARCHAR(255)
---     location VARCHAR(255)
 --     capacity INT
 --     admin_id INT [ref: > users.id]
+-- }
+
+-- Table locations {
+--     id INT [pk, ref: > compounds.id] // Same as compounds.id
+--     x NUMERIC                       // X coordinate
+--     y NUMERIC                       // Y coordinate
 -- }
 
 -- Table compound_employees {
