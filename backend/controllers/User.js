@@ -63,7 +63,7 @@ export const login = async(req, res, next) => {
       })
       
       if (pwd_correct){
-        res.status(200).send('success')
+        res.status(201).send('success')
       }else{
         res.status(400).send('try again something is wrong!')
       }
