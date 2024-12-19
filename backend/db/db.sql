@@ -4,8 +4,7 @@ CREATE TYPE user_role AS ENUM ('Admin', 'Employee', 'User');
 -- USERS TABLE
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
-    first_name VARCHAR(255) NOT NULL,
-    last_name VARCHAR(255) NOT NULL,
+    username VARCHAR(255) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
     pfp VARCHAR(255),
     password TEXT NOT NULL,
@@ -23,7 +22,6 @@ CREATE TABLE admins (
 CREATE TABLE compounds (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
-    capacity INT CHECK (capacity > 0),
     admin_id INT NOT NULL,
     FOREIGN KEY (admin_id) REFERENCES users(id) ON DELETE CASCADE
 );
@@ -70,7 +68,8 @@ CREATE TABLE events (
 -- GUEST LISTS TABLE
 CREATE TABLE guest_lists (
     id SERIAL PRIMARY KEY,
-    guest_name VARCHAR(255) NOT NULL,
+    guest_first_name VARCHAR(255) NOT NULL,
+    guest_last_name VARCHAR(255) NOT NULL,
     event_id INT NOT NULL,
     FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE
 );
@@ -103,38 +102,16 @@ CREATE TABLE event_employees_tasks (
     UNIQUE (event_id, employee_id, task_id)
 );
 
--- STOCKS TABLE
-CREATE TABLE stocks (
-    id SERIAL PRIMARY KEY,
-    compound_id INT UNIQUE,
-    event_id INT UNIQUE,
-    FOREIGN KEY (compound_id) REFERENCES compounds(id) ON DELETE CASCADE,
-    FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE,
-    CONSTRAINT check_at_least_one_not_null CHECK (compound_id IS NOT NULL OR event_id IS NOT NULL)
-);
-
--- STOCK ITEMS TABLE
-CREATE TABLE stock_items (
-    id SERIAL PRIMARY KEY,
-    stock_id INT NOT NULL,
-    name VARCHAR(255) NOT NULL,
-    description TEXT,
-    quantity INT DEFAULT 0 NOT NULL CHECK (quantity >= 0),
-    unit_price INT DEFAULT 0 NOT NULL CHECK (unit_price >= 0),
-    FOREIGN KEY (stock_id) REFERENCES stocks(id) ON DELETE CASCADE
-);
 
 -- RESERVATIONS TABLE
 CREATE TABLE reservations (
     id SERIAL PRIMARY KEY,
     user_id INT NOT NULL,
     event_id INT NOT NULL,
-    compound_id INT NOT NULL,
     reserved_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     payment_intent_id TEXT NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE,
-    FOREIGN KEY (compound_id) REFERENCES compounds(id) ON DELETE CASCADE
+    FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE
 );
 
 -- REVIEWS TABLE
@@ -147,6 +124,8 @@ CREATE TABLE reviews (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (compound_id) REFERENCES compounds(id) ON DELETE CASCADE
 );
+
+
 -- ratings table
 CREATE TABLE ratings(
     review_id INT PRIMARY KEY,
