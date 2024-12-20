@@ -14,6 +14,6 @@ userRoutes.get('/get-user-by-id/:user_id',auth_token(ROLES.all), get_user_by_id)
 userRoutes.delete('/delete', auth_token(ROLES.all),  remove)
 userRoutes.patch('/update-name',auth_token(ROLES.all), update_name)
 userRoutes.patch('/update-photo',auth_token(ROLES.all), update_photo)
-userRoutes.patch('/update-password',auth_token(ROLES.all), update_password )
+userRoutes.patch('/update-password',auth_token(ROLES.all), update_password)
 
 export default userRoutes

@@ -195,7 +195,7 @@ export const searchCompounds = async (req, res, next) => {
 
         res.json(response);
     } catch (error) {
-        next()
+        next(error)
     } 
 };
 
@@ -214,8 +214,19 @@ export const getCompoundById = async (req, res) => {
         res.json(result.rows[0]);
         }
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: 'Failed to get compound' });
+        next(err)
     }
-    };
+};
     
+
+    
+// Delete a compound
+export const deleteCompound = async (req, res, next) => {
+try {
+    const { id } = req.params
+    await pool.query('DELETE FROM compounds WHERE id = $1', [id]);
+    return res.status(200).json({ message: 'Compound deleted successfully' });
+} catch (err) {
+    next(err)
+}
+};
