@@ -142,4 +142,35 @@ describe('Compound Routes', () => {
     })
   })
 
+  describe('GET /api/compounds/get-by-id/:id', () => {
+    it('should get compound by id successfully', async () => {
+      const mockCompound = {
+        rows: [{
+          id: 1,
+          name: 'Test Compound',
+          admin_id: 1
+        }]
+      }
+
+      pool.query.mockResolvedValue(mockCompound)
+
+      const response = await request(app)
+        .get('/api/compounds/get-by-id/1')
+
+      expect(response.status).toBe(200)
+      expect(response.body).toEqual(mockCompound.rows[0])
+    })
+
+    it('should return 404 if compound not found', async () => {
+      pool.query.mockResolvedValue({ rows: [] })
+
+      const response = await request(app)
+        .get('/api/compounds/get-by-id/999')
+
+      expect(response.status).toBe(404)
+      expect(response.body).toEqual({ message: 'Compound not found' })
+    })
+  })
+
+  
 })
