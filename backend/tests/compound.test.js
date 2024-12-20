@@ -87,4 +87,59 @@ describe('Compound Routes', () => {
     })
   })
 
+  describe('GET /api/compounds/search', () => {
+    it('should search compounds by name', async () => {
+      const mockResults = {
+        rows: [
+          {
+            id: 1,
+            name: 'Test Compound',
+            x: 10,
+            y: 20,
+            images: ['image1.jpg']
+          }
+        ]
+      }
+
+      pool.query
+        .mockResolvedValueOnce(mockResults)
+        .mockResolvedValueOnce({ rows: [{ count: '1' }] })
+
+      const response = await request(app)
+        .get('/api/compounds/search')
+        .query({ query: 'Test' })
+
+      expect(response.status).toBe(200)
+      expect(response.body).toHaveProperty('compounds')
+      expect(response.body).toHaveProperty('pagination')
+      expect(response.body.compounds).toHaveLength(1)
+    })
+
+    it('should search compounds by location', async () => {
+      const mockResults = {
+        rows: [
+          {
+            id: 1,
+            name: 'Nearby Compound',
+            x: 10.1,
+            y: 20.1,
+            distance: 0.5
+          }
+        ]
+      }
+
+      pool.query
+        .mockResolvedValueOnce(mockResults)
+        .mockResolvedValueOnce({ rows: [{ count: '1' }] })
+
+      const response = await request(app)
+        .get('/api/compounds/search')
+        .query({ x: 10, y: 20, radius: 1 })
+
+      expect(response.status).toBe(200)
+      expect(response.body.compounds).toHaveLength(1)
+      expect(response.body.search_metadata.location).toBeTruthy()
+    })
+  })
+
 })
