@@ -237,5 +237,26 @@ describe('User Routes', () => {
     })
   })
 
+  describe('DELETE /api/users/delete', () => {
+    it('should delete user successfully', async () => {
+      pool.query.mockResolvedValue({ rowCount: 1 })
 
+      const response = await request(app)
+        .delete('/api/users/delete')
+        .set('Authorization', 'Bearer fake-token')
+
+      expect(response.status).toBe(200)
+      expect(response.body).toEqual({ message: 'successfuly logged out' })
+    })
+
+    it('should handle deletion error', async () => {
+      pool.query.mockResolvedValue({ rowCount: 0 })
+
+      const response = await request(app)
+        .delete('/api/users/delete')
+        .set('Authorization', 'Bearer fake-token')
+
+      expect(response.status).toBe(500)
+    })
+  })
 })
