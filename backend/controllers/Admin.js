@@ -1,7 +1,5 @@
-import jwt from 'jsonwebtoken'
 import pool from '../lib/db.js'
-import bcrypt from 'bcrypt'
-import cloudinary from '../api/cloudinary.js'
+
 
 
   // Join as Admin (Convert existing user to admin)

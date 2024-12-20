@@ -8,6 +8,7 @@ import errorHandler from '../backend/middleware/errorHandler.js'
 import userRoutes from './routes/User.js'
 import adminRoutes from './routes/Admin.js'
 import compoundRoutes from './routes/Compound.js'
+import notificationRoutes from './routes/Notification.js'
 
 dotenv.config()
 
@@ -36,6 +37,6 @@ try {
 app.use('/api/user/',userRoutes)
 app.use('/api/admin/', adminRoutes)
 app.use('/api/compound/', compoundRoutes)
-
+app.use('/api/notification/', notificationRoutes)
 app.use(errorHandler)
 export default app
