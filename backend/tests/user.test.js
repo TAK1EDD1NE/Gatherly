@@ -173,5 +173,58 @@ describe('User Routes', () => {
     })
   })
 
+  describe('PATCH /api/users/update-name', () => {
+    it('should update username successfully', async () => {
+      pool.query.mockResolvedValue({ rows: [{ id: 1 }] })
+
+      const response = await request(app)
+        .patch('/api/users/update-name')
+        .set('Authorization', 'Bearer fake-token')
+        .send({ new_username: 'newusername' })
+
+      expect(response.status).toBe(201)
+      expect(response.body).toEqual({ message: 'name has been updated' })
+    })
+  })
+
+  describe('PATCH /api/users/update-photo', () => {
+    it('should update profile photo successfully', async () => {
+      cloudinary.uploader.upload.mockResolvedValue({ secure_url: 'https://example.com/newphoto.jpg' })
+      pool.query.mockResolvedValue({ rows: [{ id: 1 }] })
+
+      const response = await request(app)
+        .patch('/api/users/update-photo')
+        .set('Authorization', 'Bearer fake-token')
+        .send({ photo: 'base64-photo-data' })
+
+      expect(response.status).toBe(201)
+      expect(response.body).toEqual({ message: 'photo has been updated' })
+    })
+  })
+
+  describe('PATCH /api/users/update-password', () => {
+    it('should update password successfully', async () => {
+      bcrypt.hash.mockResolvedValue('newhashpassword123')
+      pool.query.mockResolvedValue({ rows: [{ id: 1 }] })
+
+      const response = await request(app)
+        .patch('/api/users/update-password')
+        .set('Authorization', 'Bearer fake-token')
+        .send({ new_password: 'newpassword123' })
+
+      expect(response.status).toBe(201)
+      expect(response.body).toEqual({ message: 'pwd has been updated' })
+    })
+
+    it('should return 400 if new password is too short', async () => {
+      const response = await request(app)
+        .patch('/api/users/update-password')
+        .set('Authorization', 'Bearer fake-token')
+        .send({ new_password: '123' })
+
+      expect(response.status).toBe(400)
+    })
+  })
+
 
 })
