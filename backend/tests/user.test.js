@@ -99,5 +99,49 @@ describe('User Routes', () => {
     })
   })
 
+  describe('POST /api/users/login', () => {
+    it('should login successfully with correct credentials', async () => {
+      const loginData = {
+        email: 'test@example.com',
+        password: 'password123'
+      }
+
+      pool.query.mockResolvedValue({
+        rows: [{
+          id: 1,
+          email: 'test@example.com',
+          password: '$2a$10$QkmNoz0dgUkbHhbZjDhkVeTz7g3z3lc.mIkYhSL3HMnM.nhgjm5Ze'
+        }]
+      })
+
+      bcrypt.compare.mockResolvedValue(true)
+      const generateTokenMock = vi.fn();
+      jwt.sign = generateTokenMock;
+
+      const response = await request(app)
+        .post('/api/users/login')
+        .send(loginData)
+      
+      // console.log(response);
+      
+      // expect(response).toBe(201)
+      // expect(response.status).toBe(201)
+
+      expect(response.headers['set-cookie']).toBeDefined()
+    })
+
+    it('should return 404 for non-existent user', async () => {
+      pool.query.mockResolvedValue({ rows: [] })
+
+      const response = await request(app)
+        .post('/api/users/login')
+        .send({
+          email: 'nonexistent@example.com',
+          password: 'password123'
+        })
+
+      expect(response.status).toBe(404)
+    })
+  })
 
 })
