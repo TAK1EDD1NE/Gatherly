@@ -144,4 +144,34 @@ describe('User Routes', () => {
     })
   })
 
+  describe('GET /api/users/get-user-by-id/:user_id', () => {
+    it('should get user successfully', async () => {
+      const mockUser = {
+        id: 1,
+        username: 'testuser',
+        email: 'test@example.com'
+      }
+
+      pool.query.mockResolvedValue({ rows: [mockUser] })
+
+      const response = await request(app)
+        .get('/api/users/get-user-by-id/1')
+        .set('Authorization', 'Bearer fake-token')
+
+      expect(response.status).toBe(200)
+      expect(response.body).toEqual(mockUser)
+    })
+
+    it('should return 404 for non-existent user', async () => {
+      pool.query.mockResolvedValue({ rows: [] })
+
+      const response = await request(app)
+        .get('/api/users/get-user-by-id/999')
+        .set('Authorization', 'Bearer fake-token')
+
+      expect(response.status).toBe(404)
+    })
+  })
+
+
 })
