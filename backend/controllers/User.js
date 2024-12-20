@@ -9,9 +9,9 @@ const  generate_token= (user_id) => {
 
 export const signup = async (req, res, next) => {
     try{
-        const {first_name , last_name , email, photo , password} = req.body
+        const {username , email, photo , password} = req.body
         // checking variables
-        if (!first_name || !last_name || !email ){
+        if (!username || !email ){
           res.status(400)
           throw new Error('please fill in all required fields')
         } 
@@ -32,8 +32,8 @@ export const signup = async (req, res, next) => {
         }
         const hashed_password = await bcrypt.hash(password , 10)
         
-        const query = 'INSERT INTO users (first_name, last_name, email, pfp, password ) VALUES ($1, $2, $3, $4, $5)'
-        const values = [ first_name, last_name , email, avatar, hashed_password]
+        const query = 'INSERT INTO users (username, email, pfp, password ) VALUES ($1, $2, $3, $4)'
+        const values = [ username , email, avatar, hashed_password]
         await pool.query(query, values)
         res.status(201).json({message :"user created successfully."})
       }catch(err){
@@ -94,14 +94,13 @@ export const get_user_by_id = async(req, res ,next) =>{
 export const update_name = async(req, res, next) =>{
   try{
     const user = req.user
-    const {new_first_name, new_last_name} = req.body
+    const {new_username} = req.body
     
-    if (!new_first_name && !new_last_name ){
+    if (!new_username ){
       return res.status(200).json({message:"nothing has changed."})
     }
-    const first_name = new_first_name || user.first_name
-    const last_name = new_last_name || user.last_name
-    await pool.query('UPDATE users SET first_name = $1, last_name = $2 WHERE id = $3', [first_name, last_name , user.id])
+    
+    await pool.query('UPDATE users SET username = $1 WHERE id = $2', [new_username, user.id])
     return res.status(201).json({message:"name has been updated"})
   }catch(err){
     next(err)
