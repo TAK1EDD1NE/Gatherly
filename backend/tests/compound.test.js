@@ -172,5 +172,24 @@ describe('Compound Routes', () => {
     })
   })
 
-  
+  describe('DELETE /api/compounds/delete/:id', () => {
+    it('should delete compound successfully', async () => {
+      pool.query.mockResolvedValue({ rowCount: 1 })
+
+      const response = await request(app)
+        .delete('/api/compounds/delete/1')
+
+      expect(response.status).toBe(200)
+      expect(response.body).toEqual({ message: 'Compound deleted successfully' })
+    })
+
+    it('should handle deletion of non-existent compound', async () => {
+      pool.query.mockRejectedValue(new Error('Compound not found'))
+
+      const response = await request(app)
+        .delete('/api/compounds/delete/999')
+
+      expect(response.status).toBe(500)
+    })
+  })
 })
