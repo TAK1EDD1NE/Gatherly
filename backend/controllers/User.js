@@ -49,7 +49,8 @@ export const login = async(req, res, next) => {
       const values = [email]
       const user = (await pool.query(query, values)).rows[0]
       if (!user){
-        return res.status(404).send('cannot find the user!')
+        res.status(404)
+        throw new Error('cannot find the user!')
       }    
       const pwd_correct = await bcrypt.compare(password, user.password) 
       
@@ -63,12 +64,12 @@ export const login = async(req, res, next) => {
       })
       
       if (pwd_correct){
-        res.status(201).send('success')
+        return res.status(201).json({message:'success'})
       }else{
-        res.status(400).send('try again something is wrong!')
+        res.status(404)
+        throw new Error('cannot find the user!')
       }
-      res.status(201).send()
-    }catch(err){
+    }catch(err){      
       next(err)
     }
 }
