@@ -158,7 +158,6 @@ export const searchCompounds = async (req, res, next) => {
             LIMIT $${++paramCount} OFFSET $${++paramCount}
         `;
         params.push(limit, offset);
-        console.log(searchQuery);
         
         const result = await pool.query(searchQuery, params);
 
