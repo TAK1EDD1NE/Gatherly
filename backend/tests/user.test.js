@@ -226,5 +226,16 @@ describe('User Routes', () => {
     })
   })
 
+  describe('GET /api/users/signout', () => {
+    it('should sign out successfully', async () => {
+      const response = await request(app)
+        .get('/api/users/signout')
+
+      expect(response.status).toBe(200)
+      expect(response.body).toEqual({ message: 'successfuly logged out' })
+      expect(response.headers['set-cookie']).toBeDefined()
+    })
+  })
+
 
 })
