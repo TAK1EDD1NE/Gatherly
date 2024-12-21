@@ -10,6 +10,7 @@ import adminRoutes from './routes/Admin.js'
 import compoundRoutes from './routes/Compound.js'
 import notificationRoutes from './routes/Notification.js'
 import eventRoutes from './routes/Event.js'
+import employeeRoutes from './routes/Employee.js'
 
 dotenv.config()
 
@@ -38,8 +39,9 @@ try {
 app.use('/api/user/',userRoutes)
 app.use('/api/admin/', adminRoutes)
 app.use('/api/compound/', compoundRoutes)
-// app.use('/api/notification/', notificationRoutes)
+app.use('/api/notification/', notificationRoutes)
 app.use('/api/event/', eventRoutes)
+app.use('/api/employee/', employeeRoutes)
 
 
 app.use(errorHandler)
