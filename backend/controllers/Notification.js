@@ -1,4 +1,3 @@
-import Notification from "../models/Notification.js"
 import pool from '../lib/db.js'
 
 // done

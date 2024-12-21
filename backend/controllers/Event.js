@@ -1,8 +1,9 @@
-import pool from "../lib/db";
-
+import pool from '../lib/db.js'
 export const createEvent = async (req, res, next)=> {
     try {
         const { name, description, start_date, end_date, compound_id } = req.body;
+        const compound = await (pool.query('SELECT * FROM compounds WHERE id = $1', [compound_id]))
+        console.log(compound);
         
         const newEvent = await pool.query(
             'INSERT INTO events (name, description, start_date, end_date, compound_id) VALUES ($1, $2, $3, $4, $5) RETURNING *',
@@ -148,14 +149,14 @@ export const addGuest = async (req, res,next)=> {
 // Remove guest from event
 export const removeGuest = async (req, res,next)=> {
     try {
-        const { guest_id } = req.body;
+        const { id } = req.params;
         
         const deletedGuest = await pool.query(
-            'DELETE FROM guest_lists WHERE id = $1 RETURNING *',
-            [guest_id]
+            'DELETE FROM guest_lists WHERE id = $1',
+            [id]
         );
         
-        if (deletedGuest.rows.length === 0) {
+        if (!deletedGuest.rowCount) {
             res.status(404)
             throw new Error('internal server error.')
         }
