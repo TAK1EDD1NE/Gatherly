@@ -9,6 +9,7 @@ import userRoutes from './routes/User.js'
 import adminRoutes from './routes/Admin.js'
 import compoundRoutes from './routes/Compound.js'
 import notificationRoutes from './routes/Notification.js'
+import eventRoutes from './routes/Event.js'
 
 dotenv.config()
 
@@ -38,5 +39,8 @@ app.use('/api/user/',userRoutes)
 app.use('/api/admin/', adminRoutes)
 app.use('/api/compound/', compoundRoutes)
 app.use('/api/notification/', notificationRoutes)
+app.use('/api/event/', eventRoutes)
+
+
 app.use(errorHandler)
 export default app
