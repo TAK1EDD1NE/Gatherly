@@ -49,3 +49,28 @@ export const createEmployee = async (req, res,next)=> {
         next(err)
     }
 }
+
+// Delete an employee
+export const deleteEmployee = async (req, res,next) =>{
+    try {
+        const { id } = req.params;
+        
+        // Check if employee exists and has Employee role
+        const employee = await pool.query(
+            'SELECT * FROM users WHERE id = $1 AND role = $2',
+            [id, 'Employee']
+        );
+        
+        if (employee.rows.length === 0) {
+            res.status(404)
+            throw new Error('user not found.')
+        }
+        
+        // Delete user (cascade will handle related records)
+        await pool.query('DELETE FROM users WHERE id = $1', [id]);
+        
+        return res.status(200).json({message: 'Employee deleted successfully'});
+    } catch (err) {
+        next(err)
+    }
+}
