@@ -211,3 +211,29 @@ export const getEmployeeEventTasks = async (req, res,next)=> {
         next(err)
     }
 }
+
+// Remove task from event
+export const removeTask = async (req, res,next)=> {
+    try {
+        const { task_id } = req.params;
+        
+        const result = await pool.query(
+            'DELETE FROM event_employees_tasks WHERE task_id = $1 RETURNING *',
+            [task_id]
+        );
+        
+        if (result.rows.length === 0) {
+            return res.status(404).json({
+                status: 'error',
+                message: 'Task assignment not found'
+            });
+        }
+        
+        // Also delete the task itself
+        await pool.query('DELETE FROM tasks WHERE id = $1', [task_id]);
+        
+        res.status(200).json({message: 'Task removed successfully'});
+    } catch (err) {
+        next(err)
+    }
+}
