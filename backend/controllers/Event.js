@@ -1,19 +1,19 @@
 import pool from '../lib/db.js'
 export const createEvent = async (req, res, next)=> {
     try {
-        const { name, description, start_date, end_date, compound_id } = req.body;
+        const { name, description, start_date, end_date, compound_id } = req.body;        
         const compound = await (pool.query('SELECT * FROM compounds WHERE id = $1', [compound_id]))
-        console.log(compound);
+        if (compound.rows.length === 0 ){
+            res.status(404)
+            throw new Error('compound not found.')
+        }
         
         const newEvent = await pool.query(
             'INSERT INTO events (name, description, start_date, end_date, compound_id) VALUES ($1, $2, $3, $4, $5) RETURNING *',
             [name, description, start_date, end_date, compound_id]
         );
-        
-        return res.status(201).json({
-            status: 'success',
-            data: newEvent.rows[0]
-        });
+
+        return res.status(201).json({data: newEvent.rows[0]});
     } catch (err) {
         next(err)
     }

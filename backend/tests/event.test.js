@@ -2,91 +2,202 @@ import app from '../app';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import request from 'supertest'
 import express from 'express'
-import userRoutes from '../routes/User.js'
 import pool from '../lib/db.js'
-import cloudinary from '../api/cloudinary.js'
-import bcrypt from 'bcrypt'
-
+import eventRoutes from '../routes/Event.js';
+// Mock the database
+// Mock dependencies
+vi.mock('../lib/db.js', () => ({
+    default: {
+      query: vi.fn()
+    }
+  }))
+  
+  vi.mock('../api/cloudinary.js', () => ({
+    default: {
+      uploader: {
+        upload: vi.fn()
+      }
+    }
+  }))
+  
+  vi.mock('../middleware/auth.js', () => ({
+    auth_token: (requiredRole) => (req, res, next) => {
+      if (req.headers.authorization) {
+        req.user = { id: 1, role: requiredRole }
+        next()
+      } else {
+        res.status(401).json({ message: 'Unauthorized' })
+      }
+    }
+  }))
+  
+  // Setup express app for testing
+  const app = express()
+  app.use(express.json())
+  app.use('/api/events', eventRoutes)
+  
+  describe('Compound Routes', () => {
+    beforeEach(() => {
+      vi.clearAllMocks()
+    })
+  
+    afterEach(() => {
+      vi.clearAllMocks()
+    })
+    
 describe('Event Controllers', () => {
-  beforeEach(async () => {
-    await pool.query('DELETE FROM events');
-    await pool.query('DELETE FROM guest_lists');
-    await pool.query('DELETE FROM event_program');
+  beforeEach(() => {
+    // Clear all mocks before each test
+    vi.clearAllMocks();
   });
 
   describe('POST /api/events', () => {
-    it('should create a new event', async () => {
+    it('should create a new event when compound exists', async () => {
+      const eventData = {
+        name: 'Test Event',
+        description: 'This is a test event',
+        start_date: '2024-12-24T15:30:00Z',
+        end_date: '2024-12-25T15:30:00Z',
+        compound_id: 1
+      };
+
+      // Mock compound check query
+      pool.query
+        .mockResolvedValueOnce({ rows: [{ id: 1 }] }) // Compound exists
+        .mockResolvedValueOnce({ rows: [eventData] }); // Event creation
+
+      const response = await request(app)
+        .post('/api/events/create')
+        .send(eventData);
+
+      expect(response.status).toBe(201);
+      expect(response.body).toEqual({
+        status: 'success',
+        data: expect.objectContaining(eventData)
+      });
+    });
+
+    it('should return error when compound does not exist', async () => {
       const eventData = {
         name: 'Test Event',
         description: 'This is a test event',
         start_date: '2024-01-01',
         end_date: '2024-01-02',
-        compound_id: 1
+        compound_id: 999
       };
 
-      const response = await request(app).post('/api/events').send(eventData);
+      // Mock compound check query to return empty
+      pool.query.mockResolvedValueOnce({ rows: [] });
 
-      expect(response.status).toBe(201);
-      expect(response.body).toHaveProperty('status', 'success');
-      expect(response.body).toHaveProperty('data');
+      const response = await request(app)
+        .post('/api/events')
+        .send(eventData);
+
+      expect(response.status).toBe(404);
+      expect(response.body).toEqual({
+        message: 'Compound not found'
+      });
     });
   });
 
   describe('GET /api/events', () => {
-    it('should get all events', async () => {
-      await pool.query('INSERT INTO events (name, description, start_date, end_date, compound_id) VALUES ($1, $2, $3, $4, $5) RETURNING *', ['Test Event 1', 'This is a test event 1', '2024-01-01', '2024-01-02', 1]);
-      await pool.query('INSERT INTO events (name, description, start_date, end_date, compound_id) VALUES ($1, $2, $3, $4, $5) RETURNING *', ['Test Event 2', 'This is a test event 2', '2024-01-03', '2024-01-04', 1]);
+    it('should get all events for a compound', async () => {
+      const mockEvents = [
+        { id: 1, name: 'Test Event 1', description: 'Description 1' },
+        { id: 2, name: 'Test Event 2', description: 'Description 2' }
+      ];
 
-      const response = await request(app).get('/api/events').send({ compound_id: 1 });
+      // Mock the events query
+      pool.query.mockResolvedValueOnce({ rows: mockEvents });
+
+      const response = await request(app)
+        .get('/api/events')
+        .send({ compound_id: 1 });
 
       expect(response.status).toBe(200);
-      expect(response.body).toHaveProperty('status', 'success');
-      expect(response.body).toHaveProperty('data');
-      expect(response.body.data).toHaveLength(2);
+      expect(response.body).toEqual({
+        status: 'success',
+        data: mockEvents
+      });
+      expect(pool.query).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.arrayContaining([1])
+      );
     });
   });
 
   describe('GET /api/events/:id', () => {
-    it('should get an event by id', async () => {
-      const event = await pool.query('INSERT INTO events (name, description, start_date, end_date, compound_id) VALUES ($1, $2, $3, $4, $5) RETURNING *', ['Test Event', 'This is a test event', '2024-01-01', '2024-01-02', 1]);
+    it('should get an event by id with its details', async () => {
+      const mockEvent = {
+        id: 1,
+        name: 'Test Event',
+        description: 'Description'
+      };
 
-      const response = await request(app).get(`/api/events/${event.rows[0].id}`);
+      // Mock queries for event, guest list, and program
+      pool.query
+        .mockResolvedValueOnce({ rows: [mockEvent] }) // Event details
+        .mockResolvedValueOnce({ rows: [] }) // Guest list
+        .mockResolvedValueOnce({ rows: [] }); // Program
+
+      const response = await request(app)
+        .get('/api/events/1');
 
       expect(response.status).toBe(200);
-      expect(response.body).toHaveProperty('status', 'success');
-      expect(response.body).toHaveProperty('data');
-      expect(response.body.data.event).toHaveProperty('id', event.rows[0].id);
+      expect(response.body).toEqual({
+        status: 'success',
+        data: {
+          event: mockEvent,
+          guestList: [],
+          program: []
+        }
+      });
     });
 
     it('should return 404 if event not found', async () => {
-      const response = await request(app).get('/api/events/999');
+      // Mock event query to return empty
+      pool.query.mockResolvedValueOnce({ rows: [] });
+
+      const response = await request(app)
+        .get('/api/events/999');
 
       expect(response.status).toBe(404);
-      expect(response.body).toHaveProperty('status', 'error');
-      expect(response.body).toHaveProperty('message', 'Event not found');
+      expect(response.body).toEqual({
+        status: 'error',
+        message: 'Event not found'
+      });
     });
   });
 
   describe('DELETE /api/events/:id', () => {
-    it('should delete an event', async () => {
-      const event = await pool.query('INSERT INTO events (name, description, start_date, end_date, compound_id) VALUES ($1, $2, $3, $4, $5) RETURNING *', ['Test Event', 'This is a test event', '2024-01-01', '2024-01-02', 1]);
+    it('should delete an event successfully', async () => {
+      // Mock event check and deletion
+      pool.query
+        .mockResolvedValueOnce({ rows: [{ id: 1 }] }) // Event exists check
+        .mockResolvedValueOnce({ rows: [{ id: 1 }] }); // Deletion query
 
-      const response = await request(app).delete(`/api/events/${event.rows[0].id}`);
+      const response = await request(app)
+        .delete('/api/events/1');
 
       expect(response.status).toBe(200);
-      expect(response.body).toHaveProperty('status', 'success');
-      expect(response.body).toHaveProperty('message', 'Event deleted successfully');
+      expect(response.body).toEqual({
+        status: 'success',
+        message: 'Event deleted successfully'
+      });
     });
 
-    it('should return 404 if event not found', async () => {
-      const response = await request(app).delete('/api/events/999');
+    it('should return 404 if event to delete not found', async () => {
+      // Mock event check to return empty
+      pool.query.mockResolvedValueOnce({ rows: [] });
+
+      const response = await request(app)
+        .delete('/api/events/999');
 
       expect(response.status).toBe(404);
-      expect(response.body).toHaveProperty('status', 'error');
-      expect(response.body).toHaveProperty('message', 'Event not found');
+      expect(response.body).toEqual({
+        status: 'error',
+        message: 'Event not found'
+      });
     });
   });
-})
-//   describe('POST /api/events/:id/guests', () => {
-//     it('should add a guest to an event', async () => {
-//       const event = await pool.query('INSERT INTO events (name, description, start_date, end_date, compound_id) VALUES ($1, $2, $3, $4, $5) RETURNING *
+})})
