@@ -74,3 +74,42 @@ export const deleteEmployee = async (req, res,next) =>{
         next(err)
     }
 }
+
+// Assign employee to event
+export const assignToEvent = async (req, res,next)=> {
+    try {
+        const { event_id, employee_id } = req.body;
+        
+        // Check if employee exists and belongs to the correct compound
+        const employeeCheck = await pool.query(
+            `SELECT ce.* FROM compound_employees ce
+                JOIN events e ON ce.compound_id = e.compound_id
+                WHERE ce.employee_id = $1 AND e.id = $2`,
+            [employee_id, event_id]
+        );
+        
+        if (employeeCheck.rows.length === 0) {
+            res.status(400)
+            throw new Error('Employee does not belong to the event compound')
+        }
+        
+        // Create a default task for the event assignment
+        const task = await pool.query(
+            'INSERT INTO tasks (description, employee_id) VALUES ($1, $2) RETURNING *',
+            ['General event duties', employee_id]
+        );
+        
+        // Create event-employee-task relationship
+        const assignment = await pool.query(
+            'INSERT INTO event_employees_tasks (event_id, employee_id, task_id) VALUES ($1, $2, $3) RETURNING *',
+            [event_id, employee_id, task.rows[0].id]
+        );
+        
+        res.status(201).json({
+            status: 'success',
+            data: assignment.rows[0]
+        });
+    } catch (err) {
+        next(err)
+    }
+}
