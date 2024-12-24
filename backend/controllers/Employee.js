@@ -146,3 +146,68 @@ export const assignTask = async (req, res,next) =>{
         next(err)
     }
 }
+// Get employee tasks for an event
+export const getEmployeeEventTasks = async (req, res,next)=> {
+    try {
+        const { event_id, employee_id } = req.params;
+        console.log({ event_id, employee_id });
+        
+        // First verify the employee exists
+        const employeeExists = await pool.query(
+            'SELECT * FROM users WHERE id = $1 AND role = $2',
+            [employee_id, 'Employee']
+        );
+
+        if (employeeExists.rows.length === 0) {
+            res.status(404)
+            throw new Error('employee not found.')
+        }
+
+        // Verify the event exists
+        const eventExists = await pool.query(
+            'SELECT * FROM events WHERE id = $1',
+            [event_id]
+        );
+
+        if (eventExists.rows.length === 0) {
+            res.status(404)
+            throw new Error('event not found.')
+        }
+
+        // Check if employee is assigned to the event
+        const assignmentExists = await pool.query(
+            'SELECT * FROM event_employees_tasks WHERE event_id = $1 AND employee_id = $2',
+            [event_id, employee_id]
+        );
+
+        if (assignmentExists.rows.length === 0) {
+            res.status(404)
+            throw new Error('Employee is not assigned to this event')
+        }
+
+        // Get tasks with LEFT JOIN to ensure we get tasks even if some relationships are missing
+        const tasks = await pool.query(
+            `SELECT 
+                t.id AS task_id,
+                t.description AS task_description,
+                eet.event_id,
+                e.name AS event_name,
+                e.start_date AS event_start_date,
+                e.end_date AS event_end_date,
+                u.id AS employee_id,
+                u.username AS employee_name,
+                u.email AS employee_email
+            FROM tasks t
+            LEFT JOIN event_employees_tasks eet ON t.id = eet.task_id
+            LEFT JOIN events e ON eet.event_id = e.id
+            LEFT JOIN users u ON t.employee_id = u.id
+            WHERE t.employee_id = $1 
+            AND eet.event_id = $2`,
+            [employee_id, event_id]
+        );
+        
+        res.status(200).json({data: tasks.rows});
+    } catch (err) {
+        next(err)
+    }
+}
