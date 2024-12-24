@@ -181,7 +181,7 @@ export const addProgramItem = async (req, res,next) =>{
             [description, start_time, end_time, event_id]
         );
         
-        res.status(201).json({status: 'success'})
+        res.status(201).json({status: 'success', id : newProgramItem.rows[0].id})
     } catch (err) {
         next(err)
     }

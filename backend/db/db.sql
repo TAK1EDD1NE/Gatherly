@@ -87,7 +87,9 @@ CREATE TABLE event_program (
 -- TASKS TABLE
 CREATE TABLE tasks (
     id SERIAL PRIMARY KEY,
-    description TEXT NOT NULL
+    description TEXT NOT NULL,
+    employee_id INT NOT NULL,
+    FOREIGN KEY (employee_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 -- EVENT-EMPLOYEES-TASKS TABLE (MANY-TO-MANY-TO-MANY)

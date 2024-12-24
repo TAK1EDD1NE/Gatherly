@@ -113,3 +113,36 @@ export const assignToEvent = async (req, res,next)=> {
         next(err)
     }
 }
+
+// Assign task to employee in event
+export const assignTask = async (req, res,next) =>{
+    try {
+        const { event_id, employee_id, description } = req.body;
+        
+        // Start a transaction
+        
+        try {
+            await pool.query('BEGIN');
+            
+            // Create new task
+            const newTask = await pool.query(
+                'INSERT INTO tasks (description, employee_id) VALUES ($1, $2) RETURNING *',
+                [description, employee_id]
+            );
+            
+            // Create event-employee-task relationship
+            await pool.query(
+                'INSERT INTO event_employees_tasks (event_id, employee_id, task_id) VALUES ($1, $2, $3)',
+                [event_id, employee_id, newTask.rows[0].id]
+            );
+            
+            await pool.query('COMMIT');
+            
+            res.status(201).json({data: newTask.rows[0]})
+        } catch (err) {
+            next(err)
+        }
+    } catch (err) {
+        next(err)
+    }
+}
