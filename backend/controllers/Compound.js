@@ -39,7 +39,6 @@ export const createCompound = async (req, res , next) => {
     // Add features to Features table and create relationships in Compound_Features table
     for (const feature of features) {
         const feature_id = (await pool.query('SELECT * FROM Features WHERE name = $1', [feature])).rows[0].id
-        
         await pool.query('INSERT INTO Compound_Features (compound_id, feature_id) VALUES ($1, $2)', [compound_id, feature_id]);
       }
 
@@ -208,11 +207,32 @@ export const searchCompounds = async (req, res, next) => {
 
 
 // Get a compound by id
-export const getCompoundById = async (req, res) => {
+export const getCompoundById = async (req, res, next) => {
     try {
         const { id } = req.params;
         const result = await pool.query(
-        'SELECT * FROM compounds WHERE id = $1',
+        `
+        SELECT 
+            c.name AS compound_name,
+            l.x AS location_x,
+            l.y AS location_y,
+            ARRAY_AGG(DISTINCT g.image_url) AS gallery_links,  -- Aggregate gallery URLs
+            ARRAY_AGG(DISTINCT f.name) AS features  -- Aggregate feature names
+        FROM 
+            Compounds c
+        JOIN 
+            locations l ON c.id = l.id
+        LEFT JOIN 
+            Compound_Features cf ON c.id = cf.compound_id
+        LEFT JOIN 
+            Features f ON cf.feature_id = f.id
+        LEFT JOIN 
+            galleries g ON c.id = g.compound_id  -- Ensure no duplication of galleries
+        WHERE 
+            c.id = $1
+        GROUP BY 
+            c.id, c.name, l.x, l.y;
+        `,
         [id]
         );
         if (result.rows.length === 0) {
