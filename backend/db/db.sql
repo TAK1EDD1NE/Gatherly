@@ -36,8 +36,8 @@ CREATE TABLE Features (
 CREATE TABLE Compound_Features (
     compound_id INT NOT NULL,
     feature_id INT NOT NULL,
-    FOREIGN KEY (compound_id) REFERENCES compounds(id),
-    FOREIGN KEY (feature_id) REFERENCES Features(id)
+    FOREIGN KEY (compound_id) REFERENCES compounds(id) ON DELETE CASCADE,
+    FOREIGN KEY (feature_id) REFERENCES Features(id) ON DELETE CASCADE
 );
 
 
