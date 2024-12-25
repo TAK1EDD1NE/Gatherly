@@ -4,7 +4,7 @@ import cloudinary from '../api/cloudinary.js'
 // Create a compound
 export const createCompound = async (req, res , next) => {
   try {
-    const { name , location , gallery } = req.body
+    const { name , location , gallery , features} = req.body
     const {id: admin_id} = req.user
 
     if (!name || !location.x || !location.y || gallery.length != 5){
@@ -35,6 +35,14 @@ export const createCompound = async (req, res , next) => {
                       )
                 }
     });
+
+    // Add features to Features table and create relationships in Compound_Features table
+    for (const feature of features) {
+        const feature_id = (await pool.query('SELECT * FROM Features WHERE name = $1', [feature])).rows[0].id
+        
+        await pool.query('INSERT INTO Compound_Features (compound_id, feature_id) VALUES ($1, $2)', [compound_id, feature_id]);
+      }
+
     await pool.query(
       'INSERT INTO locations (id, x, y) VALUES ($1, $2, $3) ',
       [compound_id, location.x, location.y]

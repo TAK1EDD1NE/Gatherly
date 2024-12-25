@@ -5,6 +5,7 @@ import compoundRoutes from '../routes/Compound.js'
 import pool from '../lib/db.js'
 import cloudinary from '../api/cloudinary.js'
 import jwt from 'jsonwebtoken'
+import { features } from 'process'
 
 // Mock dependencies
 vi.mock('../lib/db.js', () => ({
@@ -51,7 +52,13 @@ describe('Compound Routes', () => {
       // Mock database responses
       pool.query
         .mockResolvedValueOnce({ rows: [{ id: 1 }] }) // compounds insert
-        .mockResolvedValueOnce({ rows: [{ id: 1 }] }) // galleries insert
+        .mockResolvedValueOnce({ rows: [{ id: 1 }] }) // 1 - galleries insert
+        .mockResolvedValueOnce({ rows: [{ id: 2 }] }) // 2 - galleries insert
+        .mockResolvedValueOnce({ rows: [{ id: 3 }] }) // 3 - galleries insert
+        .mockResolvedValueOnce({ rows: [{ id: 4 }] }) // 4 - galleries insert
+        .mockResolvedValueOnce({ rows: [{ id: 5 }] }) // 5 - galleries insert
+        .mockResolvedValueOnce({ rows: [{ id: 10 }] }) // feature insert
+        .mockResolvedValueOnce({ rows: [{ id: 1 }] }) // feature insert
         .mockResolvedValueOnce({ rows: [{ id: 1 }] }) // locations insert
 
       // Mock cloudinary upload
@@ -63,12 +70,13 @@ describe('Compound Routes', () => {
         .send({
           name: 'Test Compound',
           location: { x: 10, y: 20 },
-          gallery: ['image1', 'image2', 'image3', 'image4', 'image5']
+          gallery: ['image1', 'image2', 'image3', 'image4', 'image5'],
+          features:['f1']
         })
 
       expect(response.status).toBe(201)
       expect(response.body).toEqual({ message: 'compound created successfully.' })
-      expect(pool.query).toHaveBeenCalledTimes(7)
+      expect(pool.query).toHaveBeenCalledTimes(9)
       expect(cloudinary.uploader.upload).toHaveBeenCalled()
     })
 
