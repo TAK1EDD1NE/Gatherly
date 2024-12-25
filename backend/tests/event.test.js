@@ -1,203 +1,287 @@
-import app from '../app';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import request from 'supertest'
-import express from 'express'
 import pool from '../lib/db.js'
-import eventRoutes from '../routes/Event.js';
-// Mock the database
-// Mock dependencies
+import {
+  createEvent,
+  get_all_events,
+  getEventById,
+  deleteEvent,
+  addGuest,
+  removeGuest,
+  addProgramItem,
+  deleteProgramItem
+} from '../controllers/Event.js'
+
+// Mock the database pool
 vi.mock('../lib/db.js', () => ({
-    default: {
-      query: vi.fn()
-    }
-  }))
-  
-  vi.mock('../api/cloudinary.js', () => ({
-    default: {
-      uploader: {
-        upload: vi.fn()
-      }
-    }
-  }))
-  
-  vi.mock('../middleware/auth.js', () => ({
-    auth_token: (requiredRole) => (req, res, next) => {
-      if (req.headers.authorization) {
-        req.user = { id: 1, role: requiredRole }
-        next()
-      } else {
-        res.status(401).json({ message: 'Unauthorized' })
-      }
-    }
-  }))
-  
-  // Setup express app for testing
-  const app = express()
-  app.use(express.json())
-  app.use('/api/events', eventRoutes)
-  
-  describe('Compound Routes', () => {
-    beforeEach(() => {
-      vi.clearAllMocks()
-    })
-  
-    afterEach(() => {
-      vi.clearAllMocks()
-    })
-    
-describe('Event Controllers', () => {
+  default: {
+    query: vi.fn()
+  }
+}))
+
+describe('Events Controller', () => {
+  // Mock request and response objects
+  let req
+  let res
+  let next
+
   beforeEach(() => {
+    req = {
+      body: {},
+      params: {}
+    }
+    res = {
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn()
+    }
+    next = vi.fn()
+    
     // Clear all mocks before each test
-    vi.clearAllMocks();
-  });
+    vi.clearAllMocks()
+  })
 
-  describe('POST /api/events', () => {
-    it('should create a new event when compound exists', async () => {
-      const eventData = {
+  describe('createEvent', () => {
+    it('should create a new event successfully', async () => {
+      const mockCompound = { rows: [{ id: 1 }] }
+      const mockEvent = { 
+        rows: [{
+          id: 1,
+          name: 'Test Event',
+          description: 'Test Description'
+        }]
+      }
+
+      req.body = {
         name: 'Test Event',
-        description: 'This is a test event',
-        start_date: '2024-12-24T15:30:00Z',
-        end_date: '2024-12-25T15:30:00Z',
-        compound_id: 1
-      };
-
-      // Mock compound check query
-      pool.query
-        .mockResolvedValueOnce({ rows: [{ id: 1 }] }) // Compound exists
-        .mockResolvedValueOnce({ rows: [eventData] }); // Event creation
-
-      const response = await request(app)
-        .post('/api/events/create')
-        .send(eventData);
-
-      expect(response.status).toBe(201);
-      expect(response.body).toEqual({
-        status: 'success',
-        data: expect.objectContaining(eventData)
-      });
-    });
-
-    it('should return error when compound does not exist', async () => {
-      const eventData = {
-        name: 'Test Event',
-        description: 'This is a test event',
+        description: 'Test Description',
         start_date: '2024-01-01',
         end_date: '2024-01-02',
-        compound_id: 999
-      };
+        compound_id: 1
+      }
 
-      // Mock compound check query to return empty
-      pool.query.mockResolvedValueOnce({ rows: [] });
-
-      const response = await request(app)
-        .post('/api/events')
-        .send(eventData);
-
-      expect(response.status).toBe(404);
-      expect(response.body).toEqual({
-        message: 'Compound not found'
-      });
-    });
-  });
-
-  describe('GET /api/events', () => {
-    it('should get all events for a compound', async () => {
-      const mockEvents = [
-        { id: 1, name: 'Test Event 1', description: 'Description 1' },
-        { id: 2, name: 'Test Event 2', description: 'Description 2' }
-      ];
-
-      // Mock the events query
-      pool.query.mockResolvedValueOnce({ rows: mockEvents });
-
-      const response = await request(app)
-        .get('/api/events')
-        .send({ compound_id: 1 });
-
-      expect(response.status).toBe(200);
-      expect(response.body).toEqual({
-        status: 'success',
-        data: mockEvents
-      });
-      expect(pool.query).toHaveBeenCalledWith(
-        expect.any(String),
-        expect.arrayContaining([1])
-      );
-    });
-  });
-
-  describe('GET /api/events/:id', () => {
-    it('should get an event by id with its details', async () => {
-      const mockEvent = {
-        id: 1,
-        name: 'Test Event',
-        description: 'Description'
-      };
-
-      // Mock queries for event, guest list, and program
       pool.query
-        .mockResolvedValueOnce({ rows: [mockEvent] }) // Event details
-        .mockResolvedValueOnce({ rows: [] }) // Guest list
-        .mockResolvedValueOnce({ rows: [] }); // Program
+        .mockResolvedValueOnce(mockCompound)
+        .mockResolvedValueOnce(mockEvent)
 
-      const response = await request(app)
-        .get('/api/events/1');
+      await createEvent(req, res, next)
 
-      expect(response.status).toBe(200);
-      expect(response.body).toEqual({
+      expect(pool.query).toHaveBeenCalledTimes(2)
+      expect(res.status).toHaveBeenCalledWith(201)
+      expect(res.json).toHaveBeenCalledWith({ data: mockEvent.rows[0] })
+    })
+
+    it('should handle compound not found error', async () => {
+      req.body = {
+        name: 'Test Event',
+        compound_id: 999
+      }
+
+      pool.query.mockResolvedValueOnce({ rows: [] })
+
+      await createEvent(req, res, next)
+
+      expect(res.status).toHaveBeenCalledWith(404)
+      expect(next).toHaveBeenCalledWith(expect.any(Error))
+    })
+  })
+
+  describe('get_all_events', () => {
+    it('should return all events for a compound', async () => {
+      const mockEvents = {
+        rows: [
+          { id: 1, name: 'Event 1' },
+          { id: 2, name: 'Event 2' }
+        ]
+      }
+
+      req.body = { compound_id: 1 }
+      pool.query.mockResolvedValueOnce(mockEvents)
+
+      await get_all_events(req, res, next)
+
+      expect(pool.query).toHaveBeenCalledTimes(1)
+      expect(res.json).toHaveBeenCalledWith({
+        status: 'success',
+        data: mockEvents.rows
+      })
+    })
+  })
+
+  describe('getEventById', () => {
+    it('should return event with guest list and program', async () => {
+      const mockEvent = { rows: [{ id: 1, name: 'Test Event' }] }
+      const mockGuests = { rows: [{ id: 1, guest_first_name: 'John' }] }
+      const mockProgram = { rows: [{ id: 1, description: 'Opening' }] }
+
+      req.params = { id: 1 }
+
+      pool.query
+        .mockResolvedValueOnce(mockEvent)
+        .mockResolvedValueOnce(mockGuests)
+        .mockResolvedValueOnce(mockProgram)
+
+      await getEventById(req, res, next)
+
+      expect(pool.query).toHaveBeenCalledTimes(3)
+      expect(res.json).toHaveBeenCalledWith({
         status: 'success',
         data: {
-          event: mockEvent,
-          guestList: [],
-          program: []
+          event: mockEvent.rows[0],
+          guestList: mockGuests.rows,
+          program: mockProgram.rows
         }
-      });
-    });
+      })
+    })
 
-    it('should return 404 if event not found', async () => {
-      // Mock event query to return empty
-      pool.query.mockResolvedValueOnce({ rows: [] });
+    it('should handle event not found', async () => {
+      req.params = { id: 999 }
+      pool.query.mockResolvedValueOnce({ rows: [] })
 
-      const response = await request(app)
-        .get('/api/events/999');
+      await getEventById(req, res, next)
 
-      expect(response.status).toBe(404);
-      expect(response.body).toEqual({
+      expect(res.status).toHaveBeenCalledWith(404)
+      expect(res.json).toHaveBeenCalledWith({
         status: 'error',
         message: 'Event not found'
-      });
-    });
-  });
+      })
+    })
+  })
 
-  describe('DELETE /api/events/:id', () => {
+  describe('deleteEvent', () => {
     it('should delete an event successfully', async () => {
-      // Mock event check and deletion
-      pool.query
-        .mockResolvedValueOnce({ rows: [{ id: 1 }] }) // Event exists check
-        .mockResolvedValueOnce({ rows: [{ id: 1 }] }); // Deletion query
+      const mockDeletedEvent = { rows: [{ id: 1 }] }
+      req.params = { id: 1 }
+      
+      pool.query.mockResolvedValueOnce(mockDeletedEvent)
 
-      const response = await request(app)
-        .delete('/api/events/1');
+      await deleteEvent(req, res, next)
 
-      expect(response.status).toBe(200);
-      expect(response.body).toEqual({
+      expect(pool.query).toHaveBeenCalledTimes(1)
+      expect(res.json).toHaveBeenCalledWith({
         status: 'success',
         message: 'Event deleted successfully'
-      });
-    });
+      })
+    })
+  })
 
-    it('should return 404 if event to delete not found', async () => {
-      // Mock event check to return empty
-      pool.query.mockResolvedValueOnce({ rows: [] });
+  describe('addGuest', () => {
+    it('should add a guest successfully', async () => {
+      const mockNewGuest = {
+        rows: [{
+          id: 1,
+          guest_first_name: 'John',
+          guest_last_name: 'Doe'
+        }]
+      }
 
-      const response = await request(app)
-        .delete('/api/events/999');
+      req.body = {
+        guest_first_name: 'John',
+        guest_last_name: 'Doe',
+        event_id: 1
+      }
 
-      expect(response.status).toBe(404);
-      expect(response.body).toEqual({
+      pool.query.mockResolvedValueOnce(mockNewGuest)
+
+      await addGuest(req, res, next)
+
+      expect(res.status).toHaveBeenCalledWith(201)
+      expect(res.json).toHaveBeenCalledWith({
+        message: 'success',
+        newGuest: mockNewGuest.rows[0]
+      })
+    })
+  })
+
+  describe('removeGuest', () => {
+    it('should remove a guest successfully', async () => {
+      req.params = { id: 1 }
+      pool.query.mockResolvedValueOnce({ rowCount: 1 })
+
+      await removeGuest(req, res, next)
+
+      expect(res.status).toHaveBeenCalledWith(200)
+      expect(res.json).toHaveBeenCalledWith({
+        message: 'Guest removed successfully'
+      })
+    })
+
+    it('should handle guest not found', async () => {
+      req.params = { id: 999 }
+      pool.query.mockResolvedValueOnce({ rowCount: 0 })
+
+      await removeGuest(req, res, next)
+
+      expect(res.status).toHaveBeenCalledWith(404)
+      expect(next).toHaveBeenCalledWith(expect.any(Error))
+    })
+  })
+
+  describe('addProgramItem', () => {
+    it('should add a program item successfully', async () => {
+      const mockProgramItem = {
+        rows: [{
+          id: 1,
+          description: 'Opening Ceremony'
+        }]
+      }
+
+      req.body = {
+        description: 'Opening Ceremony',
+        start_time: '10:00',
+        end_time: '11:00',
+        event_id: 1
+      }
+
+      pool.query.mockResolvedValueOnce(mockProgramItem)
+
+      await addProgramItem(req, res, next)
+
+      expect(res.status).toHaveBeenCalledWith(201)
+      expect(res.json).toHaveBeenCalledWith({
+        status: 'success',
+        id: mockProgramItem.rows[0].id
+      })
+    })
+
+    it('should handle missing required fields', async () => {
+      req.body = {
+        description: 'Opening Ceremony'
+        // Missing start_time and end_time
+      }
+
+      await addProgramItem(req, res, next)
+
+      expect(res.status).toHaveBeenCalledWith(403)
+      expect(next).toHaveBeenCalledWith(expect.any(Error))
+    })
+  })
+
+  describe('deleteProgramItem', () => {
+    it('should delete a program item successfully', async () => {
+      const mockDeletedItem = { rows: [{ id: 1 }] }
+      req.params = { id: 1 }
+      
+      pool.query.mockResolvedValueOnce(mockDeletedItem)
+
+      await deleteProgramItem(req, res, next)
+
+      expect(pool.query).toHaveBeenCalledTimes(1)
+      expect(res.json).toHaveBeenCalledWith({
+        status: 'success',
+        message: 'Program item deleted successfully'
+      })
+    })
+
+    it('should handle program item not found', async () => {
+      req.params = { id: 999 }
+      pool.query.mockResolvedValueOnce({ rows: [] })
+
+      await deleteProgramItem(req, res, next)
+
+      expect(res.status).toHaveBeenCalledWith(404)
+      expect(res.json).toHaveBeenCalledWith({
         status: 'error',
-        message: 'Event not found'
-      });
-    });
-  });
-})})
+        message: 'Program item not found'
+      })
+    })
+  })
+})
