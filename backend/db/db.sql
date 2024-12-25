@@ -26,6 +26,21 @@ CREATE TABLE compounds (
     FOREIGN KEY (admin_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
+-- Features Table
+CREATE TABLE Features (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL
+);
+
+-- Compound_Features Table (Lookup Table)
+CREATE TABLE Compound_Features (
+    compound_id INT NOT NULL,
+    feature_id INT NOT NULL,
+    FOREIGN KEY (compound_id) REFERENCES compounds(id),
+    FOREIGN KEY (feature_id) REFERENCES Features(id)
+);
+
+
 -- LOCATION TABLE
 CREATE TABLE locations (
     id INT PRIMARY KEY,      
