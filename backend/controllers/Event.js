@@ -1,19 +1,35 @@
 import pool from '../lib/db.js'
 export const createEvent = async (req, res, next)=> {
     try {
-        const { name, description, start_date, end_date, compound_id } = req.body;        
+        const { name, description, start_date, end_date, compound_id, guests, programs } = req.body;        
         const compound = await (pool.query('SELECT * FROM compounds WHERE id = $1', [compound_id]))
         if (compound.rows.length === 0 ){
             res.status(404)
             throw new Error('compound not found.')
         }
         
-        const newEvent = await pool.query(
+        const newEvent = (await pool.query(
             'INSERT INTO events (name, description, start_date, end_date, compound_id) VALUES ($1, $2, $3, $4, $5) RETURNING *',
             [name, description, start_date, end_date, compound_id]
-        );
+        )).rows[0]
+        guests.forEach(async guest => {
+            const { guest_first_name, guest_last_name } = guest;
+        
+            await pool.query(
+                'INSERT INTO guest_lists (guest_first_name, guest_last_name, event_id) VALUES ($1, $2, $3)',
+                [guest_first_name, guest_last_name, newEvent.id]
+            )
+        });
+        programs.forEach(async program => {
+            const { description, start_time, end_time } = program;
+            
+            await pool.query(
+                'INSERT INTO event_program (description, start_time, end_time, event_id) VALUES ($1, $2, $3, $4) RETURNING *',
+                [description, start_time, end_time, newEvent.id]
+            );
+        });
 
-        return res.status(201).json({data: newEvent.rows[0]});
+        return res.status(201).json({data: newEvent});
     } catch (err) {
         next(err)
     }
@@ -130,62 +146,64 @@ export const deleteEvent = async (req, res,next )=> {
     }
 }
 
-// Add guest to event
-export const addGuest = async (req, res,next)=> {
-    try {
-        const { guest_first_name, guest_last_name, event_id } = req.body;
-        
-        const newGuest = (await pool.query(
-            'INSERT INTO guest_lists (guest_first_name, guest_last_name, event_id) VALUES ($1, $2, $3) RETURNING *',
-            [guest_first_name, guest_last_name, event_id]
-        )).rows[0]
-        
-        return res.status(201).json({message: 'success',newGuest});
-    } catch (err) {
-        next(err)
-    }
-}
+///         NO NEED FOR THIS PART OF THE CODE ANYMORE BECAUSE IT'S INTEGRATED IN THE CREATE EVENT FUNC
 
-// Remove guest from event
-export const removeGuest = async (req, res,next)=> {
-    try {
-        const { id } = req.params;
+// // Add guest to event
+// export const addGuest = async (req, res,next)=> {
+//     try {
+//         const { guest_first_name, guest_last_name, event_id } = req.body;
         
-        const deletedGuest = await pool.query(
-            'DELETE FROM guest_lists WHERE id = $1',
-            [id]
-        );
+//         const newGuest = (await pool.query(
+//             'INSERT INTO guest_lists (guest_first_name, guest_last_name, event_id) VALUES ($1, $2, $3) RETURNING *',
+//             [guest_first_name, guest_last_name, event_id]
+//         )).rows[0]
         
-        if (!deletedGuest.rowCount) {
-            res.status(404)
-            throw new Error('internal server error.')
-        }
+//         return res.status(201).json({message: 'success',newGuest});
+//     } catch (err) {
+//         next(err)
+//     }
+// }
 
-        return res.status(200).json({message: 'Guest removed successfully'})
-    } catch (err) {
-        next(err)
-    }
-}
+// // Remove guest from event
+// export const removeGuest = async (req, res,next)=> {
+//     try {
+//         const { id } = req.params;
+        
+//         const deletedGuest = await pool.query(
+//             'DELETE FROM guest_lists WHERE id = $1',
+//             [id]
+//         );
+        
+//         if (!deletedGuest.rowCount) {
+//             res.status(404)
+//             throw new Error('internal server error.')
+//         }
+
+//         return res.status(200).json({message: 'Guest removed successfully'})
+//     } catch (err) {
+//         next(err)
+//     }
+// }
 
 
 // Add program item
-export const addProgramItem = async (req, res,next) =>{
-    try {
-        const { description, start_time, end_time, event_id } = req.body;
-        if(!description || ! start_time || !end_time){
-            res.status(403)
-            throw new Error('fill all required fields.')
-        }
-        const newProgramItem = await pool.query(
-            'INSERT INTO event_program (description, start_time, end_time, event_id) VALUES ($1, $2, $3, $4) RETURNING *',
-            [description, start_time, end_time, event_id]
-        );
+// export const addProgramItem = async (req, res,next) =>{
+//     try {
+//         const { description, start_time, end_time, event_id } = req.body;
+//         if(!description || ! start_time || !end_time){
+//             res.status(403)
+//             throw new Error('fill all required fields.')
+//         }
+//         const newProgramItem = await pool.query(
+//             'INSERT INTO event_program (description, start_time, end_time, event_id) VALUES ($1, $2, $3, $4) RETURNING *',
+//             [description, start_time, end_time, event_id]
+//         );
         
-        res.status(201).json({status: 'success', id : newProgramItem.rows[0].id})
-    } catch (err) {
-        next(err)
-    }
-}
+//         res.status(201).json({status: 'success', id : newProgramItem.rows[0].id})
+//     } catch (err) {
+//         next(err)
+//     }
+// }
 
 // Update program item
 // export const updateProgramItem = async (req, res,next) => {
@@ -215,27 +233,27 @@ export const addProgramItem = async (req, res,next) =>{
 // }
 
 // Delete program item
-export const deleteProgramItem =async (req, res,next) => {
-    try {
-        const { id } = req.params;
+// export const deleteProgramItem =async (req, res,next) => {
+//     try {
+//         const { id } = req.params;
         
-        const deletedItem = await pool.query(
-            'DELETE FROM event_program WHERE id = $1 RETURNING *',
-            [id]
-        );
+//         const deletedItem = await pool.query(
+//             'DELETE FROM event_program WHERE id = $1 RETURNING *',
+//             [id]
+//         );
         
-        if (deletedItem.rows.length === 0) {
-            return res.status(404).json({
-                status: 'error',
-                message: 'Program item not found'
-            });
-        }
+//         if (deletedItem.rows.length === 0) {
+//             return res.status(404).json({
+//                 status: 'error',
+//                 message: 'Program item not found'
+//             });
+//         }
 
-        res.json({
-            status: 'success',
-            message: 'Program item deleted successfully'
-        });
-    } catch (err) {
-        next(err)
-    }
-}
+//         res.json({
+//             status: 'success',
+//             message: 'Program item deleted successfully'
+//         });
+//     } catch (err) {
+//         next(err)
+//     }
+// }
