@@ -69,6 +69,9 @@ CREATE TABLE galleries (
     FOREIGN KEY (compound_id) REFERENCES compounds(id) ON DELETE CASCADE
 );
 
+-- ENUM TYPE FOR USER ROLE
+CREATE TYPE status_states AS ENUM ('waiting-owner', 'rejected-owner', 'accepted-owner', 'waiting-client', 'rejected-client', 'payed');
+
 -- EVENTS TABLE
 CREATE TABLE events (
     id SERIAL PRIMARY KEY,
@@ -77,7 +80,18 @@ CREATE TABLE events (
     start_date TIMESTAMP NOT NULL,
     end_date TIMESTAMP NOT NULL CHECK (end_date > start_date),
     compound_id INT NOT NULL,
+    status status_states DEFAULT 'waiting-owner' NOT NULL,
     FOREIGN KEY (compound_id) REFERENCES compounds(id) ON DELETE CASCADE
+);
+
+
+-- PAYMENT TABLE
+CREATE TABLE payment (
+    id SERIAL PRIMARY KEY,
+    description TEXT NOT NULL,
+    event_id INT NOT NULL,
+    price INT NOT NULL,
+    FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE
 );
 
 -- GUEST LISTS TABLE
