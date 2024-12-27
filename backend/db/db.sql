@@ -88,7 +88,7 @@ CREATE TABLE events (
 
 
 -- PAYMENT TABLE
-CREATE TABLE payment (
+CREATE TABLE payments (
     id SERIAL PRIMARY KEY,
     description TEXT NOT NULL,
     event_id INT NOT NULL,
