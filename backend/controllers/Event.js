@@ -263,7 +263,7 @@ export const deleteEvent = async (req, res,next )=> {
 // }
 
 
-export const rejectEvent = async (req, res, next )=>{
+export const reject_event_owner = async (req, res, next )=>{
     try{
         const {id: owner_id} = req.user
         const {event_id , compound_id} = req.body
@@ -280,6 +280,35 @@ export const rejectEvent = async (req, res, next )=>{
             throw new Error('unauthorized')
         }
         const result = await pool.query(`UPDATE events SET status = 'rejected-owner' WHERE id = $1`,[event_id])
+        if(!result.rowCount){
+            res.status(500)
+            throw new Error('internal server error')
+        }
+        res.status(200).json({message:'rejected successfully'})
+
+    }catch(err){
+        next(err)
+    }
+}
+
+
+export const reject_event_client = async (req, res, next )=>{
+    try{
+        const {id: client_id} = req.user
+        const {event_id} = req.body
+        const event = (await pool.query(
+            'SELECT * FROM events WHERE id = $1',
+            [event_id]
+        )).rows[0]
+        if(!event){
+            res.status(404)
+            throw new Error('compound not found.')
+        }
+        if(event.client_id != client_id){
+            res.status(403)
+            throw new Error('unauthorized')
+        }
+        const result = await pool.query(`UPDATE events SET status = 'rejected-client' WHERE id = $1`,[event_id])
         if(!result.rowCount){
             res.status(500)
             throw new Error('internal server error')
