@@ -2,7 +2,6 @@ import express from 'express'
 import cors from 'cors'
 import * as dotenv from 'dotenv'
 import cookieParser from "cookie-parser"
-//import errorHandler from './middlewares/errorHandler.js'
 import pool from '../backend/lib/db.js'
 import errorHandler from '../backend/middleware/errorHandler.js'
 import userRoutes from './routes/User.js'
@@ -11,7 +10,7 @@ import compoundRoutes from './routes/Compound.js'
 import notificationRoutes from './routes/Notification.js'
 import eventRoutes from './routes/Event.js'
 import employeeRoutes from './routes/Employee.js'
-
+import paymentRoutes from './routes/Payment.js'
 dotenv.config()
 
 const app = express()
@@ -42,7 +41,7 @@ app.use('/api/compound/', compoundRoutes)
 app.use('/api/notification/', notificationRoutes)
 app.use('/api/event/', eventRoutes)
 app.use('/api/employee/', employeeRoutes)
-
+app.use('/api/payment', paymentRoutes)
 
 app.use(errorHandler)
 export default app
