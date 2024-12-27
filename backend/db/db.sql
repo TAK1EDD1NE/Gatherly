@@ -80,8 +80,10 @@ CREATE TABLE events (
     start_date TIMESTAMP NOT NULL,
     end_date TIMESTAMP NOT NULL CHECK (end_date > start_date),
     compound_id INT NOT NULL,
+    client_id INT NOT NULL,
     status status_states DEFAULT 'waiting-owner' NOT NULL,
     FOREIGN KEY (compound_id) REFERENCES compounds(id) ON DELETE CASCADE
+    FOREIGN KEY (client_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 

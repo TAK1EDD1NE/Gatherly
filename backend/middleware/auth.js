@@ -3,12 +3,12 @@ import pool from '../lib/db.js'
 
 export const auth_token = (roles) =>{
     return async (req, res, next)=>{
-        try{        
+        try{          
             const token = req.cookies.tigerToken
-                if (!token) {
-                    res.sendStatus(401)
-                    throw new Error('session expired, please login.')
-                }
+            if (!token) {
+                res.sendStatus(401)
+                throw new Error('session expired, please login.')
+            }
             
             const verified = jwt.verify(token , process.env.ACCESS_TOKEN_SECRET)
             
@@ -28,7 +28,7 @@ export const auth_token = (roles) =>{
                 throw new Error('not authorised to access this route')
               }
               
-            req.user = user
+            req.user = user 
             next()
         }catch(err){
             next(err)
