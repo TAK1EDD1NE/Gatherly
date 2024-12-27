@@ -5,7 +5,7 @@ export const create_payment = async (req ,res , next)=>{
         const {payments, event_id} = req.body
         payments.forEach(async payment => {
             await pool.query(
-                'INSERT INTO payment (description, event_id, price) VALUES ($1, $2, $3)',
+                'INSERT INTO payments (description, event_id, price) VALUES ($1, $2, $3)',
                 [payment.description, event_id, payment.price]
             );
         });
@@ -20,7 +20,7 @@ export const getPayments = async (req, res, next) => {
     try {
       const { event_id } = req.params;
       const payments = await pool.query(
-        'SELECT * FROM payment WHERE event_id = $1',
+        'SELECT * FROM payments WHERE event_id = $1',
         [event_id]
       );
       res.json({data: payments.rows});
