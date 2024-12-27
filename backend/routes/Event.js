@@ -7,6 +7,7 @@ import {//addGuest,
         deleteEvent,
         // deleteProgramItem,
         getEventById,
+        rejectEvent,
         // removeGuest 
     } from '../controllers/Event.js';
 
@@ -15,7 +16,7 @@ const eventRoutes = express.Router()
 eventRoutes.post('/create' , auth_token(ROLES.user), createEvent)
 eventRoutes.delete('/delete/:id' , auth_token(ROLES.user), deleteEvent)
 eventRoutes.get('/get-by-id/:id' , auth_token(ROLES.all), getEventById)
-
+eventRoutes.patch('/reject',auth_token(ROLES.admin), rejectEvent)
 
 // NO NEED FOR THESE ROUTES 
 // eventRoutes.post('/guest/add' , auth_token(ROLES.admin), addGuest)

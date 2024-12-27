@@ -1,4 +1,6 @@
 import pool from '../lib/db.js'
+
+
 export const createEvent = async (req, res, next)=> {
     try {
         
@@ -259,3 +261,32 @@ export const deleteEvent = async (req, res,next )=> {
 //         next(err)
 //     }
 // }
+
+
+export const rejectEvent = async (req, res, next )=>{
+    try{
+        const {id: owner_id} = req.user
+        const {event_id , compound_id} = req.body
+        const compound = (await pool.query(
+            'SELECT * FROM compounds WHERE id = $1',
+            [compound_id]
+        )).rows[0]
+        if(!compound){
+            res.status(404)
+            throw new Error('compound not found.')
+        }
+        if(compound.admin_id != owner_id){
+            res.status(403)
+            throw new Error('unauthorized')
+        }
+        const result = await pool.query(`UPDATE events SET status = 'rejected-owner' WHERE id = $1`,[event_id])
+        if(!result.rowCount){
+            res.status(500)
+            throw new Error('internal server error')
+        }
+        res.status(200).json({message:'rejected successfully'})
+
+    }catch(err){
+        next(err)
+    }
+}
