@@ -1,7 +1,13 @@
 import pool from '../lib/db.js'
 export const createEvent = async (req, res, next)=> {
     try {
-        const { name, description, start_date, end_date, compound_id, guests, programs } = req.body;        
+        
+        const { name, description, start_date, end_date, compound_id, guests, programs } = req.body;   
+        const {id: client_id} = req.user     
+        if (!guests || ! programs || !compound_id){
+            res.status(400)
+            throw new Error('enter required fields.')
+        }
         const compound = await (pool.query('SELECT * FROM compounds WHERE id = $1', [compound_id]))
         if (compound.rows.length === 0 ){
             res.status(404)
@@ -9,8 +15,8 @@ export const createEvent = async (req, res, next)=> {
         }
         
         const newEvent = (await pool.query(
-            'INSERT INTO events (name, description, start_date, end_date, compound_id) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-            [name, description, start_date, end_date, compound_id]
+            'INSERT INTO events (name, description, start_date, end_date, compound_id, client_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+            [name, description, start_date, end_date, compound_id, client_id]
         )).rows[0]
         guests.forEach(async guest => {
             const { guest_first_name, guest_last_name } = guest;
@@ -41,10 +47,7 @@ export const get_all_events =async (req, res, next)=> {
     try {
         const {compound_id} = req.body
         const events = await pool.query('SELECT * FROM events WHERE compound_id = $1', [compound_id]);
-        res.json({
-            status: 'success',
-            data: events.rows
-        });
+        res.status(200).json({data: events.rows});
     } catch (err) {
         next(err)
     }
@@ -77,8 +80,7 @@ export const getEventById = async (req, res,next)=> {
             [id]
         );
 
-        res.json({
-            status: 'success',
+        res.status(200).json({
             data: {
                 event: event.rows[0],
                 guestList: guestList.rows,

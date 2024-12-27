@@ -12,9 +12,9 @@ import {//addGuest,
 
 const eventRoutes = express.Router()
 
-eventRoutes.post('/create' , auth_token(ROLES.admin), createEvent)
-eventRoutes.delete('/delete/:id' , auth_token(ROLES.admin), deleteEvent)
-eventRoutes.get('/get-by-id/:id' , auth_token(ROLES.admin), getEventById)
+eventRoutes.post('/create' , auth_token(ROLES.user), createEvent)
+eventRoutes.delete('/delete/:id' , auth_token(ROLES.user), deleteEvent)
+eventRoutes.get('/get-by-id/:id' , auth_token(ROLES.all), getEventById)
 
 
 // NO NEED FOR THESE ROUTES 
