@@ -6,10 +6,25 @@ export const create_payment = async (req ,res , next)=>{
         payments.forEach(async payment => {
             await pool.query(
                 'INSERT INTO payment (description, event_id, price) VALUES ($1, $2, $3)',
-                [description, event_id, price]
+                [payment.description, event_id, payment.price]
             );
         });
+        await pool.query(`UPDATE events SET status = 'accepted-owner' WHERE id = $1`,[event_id])
+        return res.status(200).json({message:'bill created seccessefully'})
     }catch(err){
         next(err)
     }
 }
+
+export const getPayments = async (req, res, next) => {
+    try {
+      const { event_id } = req.params;
+      const payments = await pool.query(
+        'SELECT * FROM payment WHERE event_id = $1',
+        [event_id]
+      );
+      res.json({data: payments.rows});
+    } catch (err) {
+      next(err);
+    }
+  };
