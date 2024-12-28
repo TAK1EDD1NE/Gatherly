@@ -11,6 +11,7 @@ import notificationRoutes from './routes/Notification.js'
 import eventRoutes from './routes/Event.js'
 import employeeRoutes from './routes/Employee.js'
 import paymentRoutes from './routes/Payment.js'
+import reviewRoutes from './routes/Review.js'
 dotenv.config()
 
 const app = express()
@@ -42,6 +43,6 @@ app.use('/api/notification/', notificationRoutes)
 app.use('/api/event/', eventRoutes)
 app.use('/api/employee/', employeeRoutes)
 app.use('/api/payment', paymentRoutes)
-
+app.use('/api/review/',reviewRoutes)
 app.use(errorHandler)
 export default app
