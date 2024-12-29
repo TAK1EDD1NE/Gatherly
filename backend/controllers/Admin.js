@@ -1,5 +1,7 @@
 import pool from '../lib/db.js'
-
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
+import { transporter } from '../api/nodemailer.js';
 
 
   // Join as Admin (Convert existing user to admin)
@@ -32,8 +34,7 @@ export const get_admin = async (req, res ,next)=>{
     const query = `
         SELECT 
             u.id, 
-            u.first_name, 
-            u.last_name, 
+            u.username, 
             u.email, 
             u.pfp, 
             u.role, 
