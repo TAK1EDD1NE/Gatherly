@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken'
 import pool from '../lib/db.js'
 import bcrypt from 'bcrypt'
 import cloudinary from '../api/cloudinary.js'
+import { transporter } from '../api/nodemailer.js';
 
 const  generate_token= (user_id) => {
   return jwt.sign(user_id , process.env.ACCESS_TOKEN_SECRET)
@@ -176,3 +177,231 @@ export const remove = async (req, res, next)=>{
     next(err)
   }
 }
+
+
+export const reset_password = async (req, res, next )=>{
+  
+try {
+    const { token, newPassword } = req.body;
+
+    // Verify token
+    const decoded = jwt.verify(token, process.env.JWT_RESET_SECRET);
+
+    // Check if token is expired
+    if (!decoded) {
+        return res.status(400).json({
+            error: 'Invalid or expired reset token'
+        });
+    }
+
+    await pool.query('BEGIN');
+
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update password
+    await pool.query(
+        'UPDATE users SET password = $1 WHERE id = $2',
+        [hashedPassword, decoded.userId]
+    );
+
+    // Get user email for confirmation
+    const userResult = await pool.query(
+        'SELECT email FROM users WHERE id = $1',
+        [decoded.userId]
+    );
+
+    // Send confirmation email
+    const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: userResult.rows[0].email,
+        subject: 'Password Reset Successful',
+        html: `
+            <h1>Password Reset Successful</h1>
+            <p>Your password has been successfully reset.</p>
+            <p>If you didn't make this change, please contact our support team immediately.</p>
+            <p>Best regards,<br>Your App Team</p>
+        `
+    };
+
+    await transporter.sendMail(mailOptions);
+    await pool.query('COMMIT');
+
+    return res.status(200).json({
+        message: 'Password reset successful'
+    });
+
+} catch (error) {
+    await pool.query('ROLLBACK');
+    next(error)
+}
+}
+
+export const request_reset = async (req, res,next)=> {
+try {
+    const { email } = req.body;
+
+    const userResult = await pool.query(
+        'SELECT id, email FROM users WHERE email = $1',
+        [email]
+    );
+
+    if (!userResult.rows[0]) {
+        res.status(404)
+        throw new Error('user not found.')
+    }
+
+    const user = userResult.rows[0];
+
+    console.log(user);
+    
+    // Generate reset token
+    const resetToken = jwt.sign(
+        { userId: user.id },
+        process.env.JWT_RESET_SECRET,
+        { expiresIn: '1h' }
+    );
+
+    const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
+
+    const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: email,
+        subject: 'Password Reset Request',
+        html: `
+            <h1>Password Reset Request</h1>
+            <p>You requested a password reset. Please click the link below to reset your password:</p>
+            <a href="${resetUrl}" style="padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px;">
+                Reset Password
+            </a>
+            <p>This link will expire in 1 hour.</p>
+            <p>If you didn't request this, please ignore this email.</p>
+            <p>Best regards,<br>Your App Team</p>
+        `
+    };
+    
+    // Send email
+    await transporter.sendMail(mailOptions);
+    console.log('man');
+
+    return res.status(200).json({
+        message: 'Password reset email sent'
+    });
+
+} catch (error) {
+    console.error('Error requesting password reset:', error);
+    return res.status(500).json({
+        error: 'Failed to process password reset request'
+    });
+}
+}
+
+// Reset password using token
+// export const resetPassword = async (req, res, next) =>{
+// const client = await db.connect();
+
+// try {
+//     const { token, newPassword } = req.body;
+
+//     // Verify token
+//     const decoded = jwt.verify(token, process.env.JWT_RESET_SECRET);
+
+//     // Check if token is expired
+//     if (!decoded) {
+//         return res.status(400).json({
+//             error: 'Invalid or expired reset token'
+//         });
+//     }
+
+//     await client.query('BEGIN');
+
+//     // Hash new password
+//     const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+//     // Update password
+//     await client.query(
+//         'UPDATE users SET password = $1 WHERE id = $2',
+//         [hashedPassword, decoded.userId]
+//     );
+
+//     // Get user email for confirmation
+//     const userResult = await client.query(
+//         'SELECT email FROM users WHERE id = $1',
+//         [decoded.userId]
+//     );
+
+//     // Send confirmation email
+//     const mailOptions = {
+//         from: process.env.EMAIL_USER,
+//         to: userResult.rows[0].email,
+//         subject: 'Password Reset Successful',
+//         html: `
+//             <h1>Password Reset Successful</h1>
+//             <p>Your password has been successfully reset.</p>
+//             <p>If you didn't make this change, please contact our support team immediately.</p>
+//             <p>Best regards,<br>Your App Team</p>
+//         `
+//     };
+
+//     await transporter.sendMail(mailOptions);
+//     await client.query('COMMIT');
+
+//     return res.status(200).json({
+//         message: 'Password reset successful'
+//     });
+
+// } catch (error) {
+//     await client.query('ROLLBACK');
+//     console.error('Error resetting password:', error);
+    
+//     if (error.name === 'JsonWebTokenError') {
+//         return res.status(400).json({
+//             error: 'Invalid reset token'
+//         });
+//     }
+    
+//     if (error.name === 'TokenExpiredError') {
+//         return res.status(400).json({
+//             error: 'Reset token has expired'
+//         });
+//     }
+
+//     return res.status(500).json({
+//         error: 'Failed to reset password'
+//     });
+// } finally {
+//     client.release();
+// }
+// }
+
+// // Verify reset token (optional - for frontend validation)
+// export const verifyResetToken = async (req, res, next) =>{
+// try {
+//     const { token } = req.params;
+
+//     const decoded = jwt.verify(token, process.env.JWT_RESET_SECRET);
+    
+//     if (!decoded) {
+//         return res.status(400).json({
+//             error: 'Invalid reset token'
+//         });
+//     }
+
+//     return res.status(200).json({
+//         message: 'Valid reset token'
+//     });
+
+// } catch (error) {
+//     console.error('Error verifying reset token:', error);
+    
+//     if (error.name === 'TokenExpiredError') {
+//         return res.status(400).json({
+//             error: 'Reset token has expired'
+//         });
+//     }
+
+//     return res.status(400).json({
+//         error: 'Invalid reset token'
+//     });
+// }
+// }
