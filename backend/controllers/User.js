@@ -259,7 +259,7 @@ try {
     const resetToken = jwt.sign(
         { userId: user.id },
         process.env.JWT_RESET_SECRET,
-        { expiresIn: '1h' }
+        { expiresIn: '12h' }
     );
 
     const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
@@ -276,103 +276,96 @@ try {
             </a>
             <p>This link will expire in 1 hour.</p>
             <p>If you didn't request this, please ignore this email.</p>
-            <p>Best regards,<br>Your App Team</p>
+            <p>Best regards,<br>GATHERLY Team</p>
         `
     };
     
     // Send email
     await transporter.sendMail(mailOptions);
-    console.log('man');
 
     return res.status(200).json({
         message: 'Password reset email sent'
     });
 
 } catch (error) {
-    console.error('Error requesting password reset:', error);
-    return res.status(500).json({
-        error: 'Failed to process password reset request'
-    });
+  res.status(500)
+  next(error)
 }
 }
 
 // Reset password using token
-// export const resetPassword = async (req, res, next) =>{
-// const client = await db.connect();
+export const resetPassword = async (req, res, next) =>{
 
-// try {
-//     const { token, newPassword } = req.body;
+try {
+    const { token, new_password } = req.body;
 
-//     // Verify token
-//     const decoded = jwt.verify(token, process.env.JWT_RESET_SECRET);
+    // Verify token
+    const decoded = jwt.verify(token, process.env.JWT_RESET_SECRET);
 
-//     // Check if token is expired
-//     if (!decoded) {
-//         return res.status(400).json({
-//             error: 'Invalid or expired reset token'
-//         });
-//     }
+    // Check if token is expired
+    if (!decoded) {
+        res.status(400)
+        throw new Error('Invalid or expired reset token')
+    }
 
-//     await client.query('BEGIN');
+    await pool.query('BEGIN');
 
-//     // Hash new password
-//     const hashedPassword = await bcrypt.hash(newPassword, 10);
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(new_password, 10);
 
-//     // Update password
-//     await client.query(
-//         'UPDATE users SET password = $1 WHERE id = $2',
-//         [hashedPassword, decoded.userId]
-//     );
+    // Update password
+    await pool.query(
+        'UPDATE users SET password = $1 WHERE id = $2',
+        [hashedPassword, decoded.userId]
+    );
 
-//     // Get user email for confirmation
-//     const userResult = await client.query(
-//         'SELECT email FROM users WHERE id = $1',
-//         [decoded.userId]
-//     );
+    // Get user email for confirmation
+    const userResult = await pool.query(
+        'SELECT email FROM users WHERE id = $1',
+        [decoded.userId]
+    );
 
-//     // Send confirmation email
-//     const mailOptions = {
-//         from: process.env.EMAIL_USER,
-//         to: userResult.rows[0].email,
-//         subject: 'Password Reset Successful',
-//         html: `
-//             <h1>Password Reset Successful</h1>
-//             <p>Your password has been successfully reset.</p>
-//             <p>If you didn't make this change, please contact our support team immediately.</p>
-//             <p>Best regards,<br>Your App Team</p>
-//         `
-//     };
+    // Send confirmation email
+    const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: userResult.rows[0].email,
+        subject: 'Password Reset Successful',
+        html: `
+            <h1>Password Reset Successful</h1>
+            <p>Your password has been successfully reset.</p>
+            <p>If you didn't make this change, please contact our support team immediately.</p>
+            <p>Best regards,<br>GATHERLY Team</p>
+        `
+    };
 
-//     await transporter.sendMail(mailOptions);
-//     await client.query('COMMIT');
+    await transporter.sendMail(mailOptions);
+    await pool.query('COMMIT');
 
-//     return res.status(200).json({
-//         message: 'Password reset successful'
-//     });
+    return res.status(200).json({
+        message: 'Password reset successful'
+    });
 
-// } catch (error) {
-//     await client.query('ROLLBACK');
-//     console.error('Error resetting password:', error);
+} catch (error) {
+    await pool.query('ROLLBACK');
+    console.error('Error resetting password:', error);
     
-//     if (error.name === 'JsonWebTokenError') {
-//         return res.status(400).json({
-//             error: 'Invalid reset token'
-//         });
-//     }
+    if (error.name === 'JsonWebTokenError') {
+        return res.status(400).json({
+            error: 'Invalid reset token'
+        });
+    }
     
-//     if (error.name === 'TokenExpiredError') {
-//         return res.status(400).json({
-//             error: 'Reset token has expired'
-//         });
-//     }
+    if (error.name === 'TokenExpiredError') {
+        return res.status(400).json({
+            error: 'Reset token has expired'
+        });
+    }
 
-//     return res.status(500).json({
-//         error: 'Failed to reset password'
-//     });
-// } finally {
-//     client.release();
-// }
-// }
+    return res.status(500).json({
+        error: 'Failed to reset password'
+    });
+}
+}
 
 // // Verify reset token (optional - for frontend validation)
 // export const verifyResetToken = async (req, res, next) =>{
