@@ -184,78 +184,122 @@ CREATE TABLE notifications (
 
 
 
+-- // ENUM TYPES
+-- Enum user_role {
+--     Admin
+--     Employee
+--     User
+-- }
 
--- the dbdiagram io code for the db
+-- Enum status_states {
+--     "waiting-owner"
+--     "rejected-owner"
+--     "waiting-client"
+--     "rejected-client"
+--     "payed"
+-- }
 
-
+-- // USERS TABLE
 -- Table users {
 --     id SERIAL [pk]
---     first_name VARCHAR(255)
---     last_name VARCHAR(255)
---     email VARCHAR(255)
+--     username VARCHAR(255) [not null]
+--     email VARCHAR(255) [unique, not null]
 --     pfp VARCHAR(255)
---     password VARCHAR(255)
---     role ENUM('Admin', 'Employee', 'User')
+--     password TEXT [not null]
+--     role user_role [default: 'User', not null]
 -- }
 
+-- // ADMINS TABLE
 -- Table admins {
 --     id INT [pk, ref: > users.id]
---     stripe_id VARCHAR(255)
+--     stripe_id VARCHAR(255) [unique, not null]
 -- }
 
+-- // COMPOUNDS TABLE
 -- Table compounds {
 --     id SERIAL [pk]
---     name VARCHAR(255)
---     capacity INT
---     admin_id INT [ref: > users.id]
+--     name VARCHAR(255) [not null]
+--     admin_id INT [not null, ref: > users.id]
 -- }
 
+-- // FEATURES TABLE
+-- Table Features {
+--     id SERIAL [pk]
+--     name VARCHAR(255) [not null]
+-- }
+
+-- // COMPOUND_FEATURES TABLE (Lookup)
+-- Table Compound_Features {
+--     compound_id INT [ref: > compounds.id]
+--     feature_id INT [ref: > Features.id]
+-- }
+
+-- // LOCATIONS TABLE
 -- Table locations {
---     id INT [pk, ref: > compounds.id] // Same as compounds.id
---     x NUMERIC                       // X coordinate
---     y NUMERIC                       // Y coordinate
+--     id INT [pk, ref: > compounds.id]
+--     x NUMERIC [not null]
+--     y NUMERIC [not null]
 -- }
 
+-- // COMPOUND_EMPLOYEES TABLE (Many-to-Many)
 -- Table compound_employees {
 --     id SERIAL [pk]
 --     compound_id INT [ref: > compounds.id]
 --     employee_id INT [ref: > users.id]
 -- }
 
+-- // GALLERIES TABLE
 -- Table galleries {
 --     id SERIAL [pk]
---     image_url TEXT
+--     image_url TEXT [not null]
 --     compound_id INT [ref: > compounds.id]
 -- }
 
+-- // EVENTS TABLE
 -- Table events {
 --     id SERIAL [pk]
---     name VARCHAR(255)
---     description TEXT
---     start_date TIMESTAMP
---     end_date TIMESTAMP
---     compound_id INT [ref: > compounds.id]
+--     name VARCHAR(255) [not null]
+--     description TEXT [not null]
+--     start_date TIMESTAMP [not null]
+--     end_date TIMESTAMP [not null]
+--     compound_id INT [not null, ref: > compounds.id]
+--     client_id INT [not null, ref: > users.id]
+--     status status_states [default: 'waiting-owner', not null]
 -- }
 
+-- // PAYMENTS TABLE
+-- Table payments {
+--     id SERIAL [pk]
+--     description TEXT [not null]
+--     event_id INT [ref: > events.id]
+--     price INT [not null]
+-- }
+
+-- // GUEST_LISTS TABLE
 -- Table guest_lists {
 --     id SERIAL [pk]
---     guest_name VARCHAR(255)
+--     guest_first_name VARCHAR(255) [not null]
+--     guest_last_name VARCHAR(255) [not null]
 --     event_id INT [ref: > events.id]
 -- }
 
+-- // EVENT_PROGRAM TABLE
 -- Table event_program {
 --     id SERIAL [pk]
---     description TEXT
---     start_time TIMESTAMP
---     end_time TIMESTAMP
+--     description TEXT [not null]
+--     start_time TIMESTAMP [not null]
+--     end_time TIMESTAMP [not null]
 --     event_id INT [ref: > events.id]
 -- }
 
+-- // TASKS TABLE
 -- Table tasks {
 --     id SERIAL [pk]
---     description TEXT
+--     description TEXT [not null]
+--     employee_id INT [ref: > users.id]
 -- }
 
+-- // EVENT_EMPLOYEES_TASKS TABLE (Many-to-Many-to-Many)
 -- Table event_employees_tasks {
 --     id SERIAL [pk]
 --     event_id INT [ref: > events.id]
@@ -263,53 +307,42 @@ CREATE TABLE notifications (
 --     task_id INT [ref: > tasks.id]
 -- }
 
--- Table stocks {
---     id SERIAL [pk]
---     compound_id INT [ref: > compounds.id]
---     event_id INT [ref: > events.id]
--- }
-
--- Table stock_items {
---     id SERIAL [pk]
---     stock_id INT [ref: > stocks.id]
---     name VARCHAR(255)
---     description TEXT
---     quantity INT
---     unit_price INT
--- }
-
+-- // RESERVATIONS TABLE
 -- Table reservations {
 --     id SERIAL [pk]
 --     user_id INT [ref: > users.id]
 --     event_id INT [ref: > events.id]
---     compound_id INT [ref: > compounds.id]
---     reserved_at TIMESTAMP
---     payment_intent_id TEXT
+--     reserved_at TIMESTAMP 
+--     payment_intent_id TEXT [not null]
 -- }
 
+-- // REVIEWS TABLE
 -- Table reviews {
 --     id SERIAL [pk]
 --     user_id INT [ref: > users.id]
 --     compound_id INT [ref: > compounds.id]
---     comment TEXT
-    
+--     comment TEXT [not null]
 --     created_at TIMESTAMP
 -- }
 
--- Table ratings{
---   id SERIAL [pk , ref: > reviews.id]
---   serving_rating INT    
---   cleanliness_rating INT
---   comfort_rating INT
---   logistics_rating INT
-  
+-- // RATINGS TABLE
+-- Table ratings {
+--     review_id INT [pk, ref: > reviews.id]
+--     serving_rating INT [note: 'Range: 1-5']
+--     cleanliness_rating INT [note: 'Range: 1-5']
+--     comfort_rating INT [note: 'Range: 1-5']
+--     logistics_rating INT [note: 'Range: 1-5']
 -- }
 
+-- // NOTIFICATIONS TABLE
 -- Table notifications {
 --     id SERIAL [pk]
 --     sender_id INT [ref: > users.id]
 --     receiver_id INT [ref: > users.id]
---     seen BOOLEAN
---     note TEXT
---     created_at TIMESTAMP
+--     seen BOOLEAN [default: false]
+--     note TEXT [default: '']
+--     created_at TIMESTAMP 
 -- }
+
+
+-- Ref: "guest_lists"."id" < "events"."start_date"
