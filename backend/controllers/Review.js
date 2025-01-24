@@ -6,7 +6,7 @@ export const createReview= async (req, res, next)=> {
 try {
     await pool.query('BEGIN');
     
-    const { compound_id, comment, ratings } = req.body;
+    const { compound_id, comment, rating } = req.body;
     const user_id = req.user.id;
 
     // Verify user has a completed event/reservation for this compound
@@ -42,24 +42,10 @@ try {
 
     // Create review
     const review = await pool.query(
-    `INSERT INTO reviews (user_id, compound_id, comment)
-        VALUES ($1, $2, $3)
+    `INSERT INTO reviews (user_id, compound_id, comment, rating)
+        VALUES ($1, $2, $3, $4)
         RETURNING *`,
-    [user_id, compound_id, comment]
-    );
-
-    // Create ratings
-    await pool.query(
-    `INSERT INTO ratings 
-        (review_id, serving_rating, cleanliness_rating, comfort_rating, logistics_rating)
-        VALUES ($1, $2, $3, $4, $5)`,
-    [
-        review.rows[0].id,
-        ratings.serving,
-        ratings.cleanliness,
-        ratings.comfort,
-        ratings.logistics
-    ]
+    [user_id, compound_id, comment, rating]
     );
 
     await pool.query('COMMIT');
@@ -71,60 +57,90 @@ try {
 
 } catch (error) {
     await pool.query('ROLLBACK');
-    console.error('Error creating review:', error);
-    return res.status(500).json({ error: 'Failed to create review' });
+    next(error)
 } 
 }
 
 // Get reviews for a compound
 export const getCompoundReviews= async (req, res, next)=> {
 try {
+    // const { compound_id } = req.params;
+
+    //   // Get all reviews with ratings and user info
+    //   const reviews = await pool.query(
+    //     `SELECT 
+    //       r.id,
+    //       r.comment,
+    //       r.created_at,
+    //       u.username as user_name,
+    //       u.pfp as user_avatar,
+    //       rt.serving_rating,
+    //       rt.cleanliness_rating,
+    //       rt.comfort_rating,
+    //       rt.logistics_rating,
+    //       (rt.serving_rating + rt.cleanliness_rating + rt.comfort_rating + rt.logistics_rating) / 4.0 as average_rating
+    //      FROM reviews r
+    //      JOIN users u ON u.id = r.user_id
+    //      JOIN ratings rt ON rt.review_id = r.id
+    //      WHERE r.compound_id = $1
+    //      ORDER BY r.created_at DESC`,
+    //     [compound_id]
+    //   );
+
+    //   // Get compound average ratings
+    //   const averageRatings = await pool.query(
+    //     `SELECT 
+    //       AVG(serving_rating) as avg_serving,
+    //       AVG(cleanliness_rating) as avg_cleanliness,
+    //       AVG(comfort_rating) as avg_comfort,
+    //       AVG(logistics_rating) as avg_logistics,
+    //       AVG((serving_rating + cleanliness_rating + comfort_rating + logistics_rating) / 4.0) as overall_average
+    //      FROM reviews r
+    //      JOIN ratings rt ON rt.review_id = r.id
+    //      WHERE r.compound_id = $1`,
+    //     [compound_id]
+    //   );
+
+    //   return res.status(200).json({
+    //     reviews: reviews.rows,
+    //     averageRatings: averageRatings.rows[0]
+    //   });
+
     const { compound_id } = req.params;
 
-      // Get all reviews with ratings and user info
-      const reviews = await pool.query(
-        `SELECT 
-          r.id,
-          r.comment,
-          r.created_at,
-          u.username as user_name,
-          u.pfp as user_avatar,
-          rt.serving_rating,
-          rt.cleanliness_rating,
-          rt.comfort_rating,
-          rt.logistics_rating,
-          (rt.serving_rating + rt.cleanliness_rating + rt.comfort_rating + rt.logistics_rating) / 4.0 as average_rating
-         FROM reviews r
-         JOIN users u ON u.id = r.user_id
-         JOIN ratings rt ON rt.review_id = r.id
-         WHERE r.compound_id = $1
-         ORDER BY r.created_at DESC`,
-        [compound_id]
-      );
+    // Get all reviews with rating and user info
+    const reviews = await pool.query(
+      `SELECT 
+        r.id,
+        r.comment,
+        r.created_at,
+        r.rating,
+        u.username as user_name,
+        u.pfp as user_avatar
+       FROM reviews r
+       JOIN users u ON u.id = r.user_id
+       WHERE r.compound_id = $1
+       ORDER BY r.created_at DESC`,
+      [compound_id]
+    );
 
-      // Get compound average ratings
-      const averageRatings = await pool.query(
-        `SELECT 
-          AVG(serving_rating) as avg_serving,
-          AVG(cleanliness_rating) as avg_cleanliness,
-          AVG(comfort_rating) as avg_comfort,
-          AVG(logistics_rating) as avg_logistics,
-          AVG((serving_rating + cleanliness_rating + comfort_rating + logistics_rating) / 4.0) as overall_average
-         FROM reviews r
-         JOIN ratings rt ON rt.review_id = r.id
-         WHERE r.compound_id = $1`,
-        [compound_id]
-      );
+    // Get compound average rating
+    const averageRatings = await pool.query(
+      `SELECT 
+        AVG(rating) as overall_average
+       FROM reviews
+       WHERE compound_id = $1`,
+      [compound_id]
+    );
 
-      return res.status(200).json({
-        reviews: reviews.rows,
-        averageRatings: averageRatings.rows[0]
-      });
+    return res.status(200).json({
+      reviews: reviews.rows,
+      averageRatings: averageRatings.rows[0]
+    });
+
 
 } catch (error) {
-    console.error('Error fetching reviews:', error);
-    return res.status(500).json({ error: 'Failed to fetch reviews' });
-}
+    next(error)}
 }
 
 // Update a review
@@ -181,8 +197,7 @@ try {
 
 } catch (error) {
     await pool.query('ROLLBACK');
-    console.error('Error updating review:', error);
-    return res.status(500).json({ error: 'Failed to update review' });
+    next(error)
 }
 }
 
@@ -223,7 +238,6 @@ try {
 
 } catch (error) {
     await pool.query('ROLLBACK');
-    console.error('Error deleting review:', error);
-    return res.status(500).json({ error: 'Failed to delete review' });
+    next(error)
 } 
 }
