@@ -11,6 +11,7 @@ export const createCompound = async (req, res , next) => {
         res.status(400)
         throw new Error('please fill in all required fields')
     }
+    await pool.query('BEGIN');
 
     const result = await pool.query(
       'INSERT INTO compounds (name, admin_id) VALUES ($1, $2) RETURNING *',
@@ -35,9 +36,12 @@ export const createCompound = async (req, res , next) => {
                       )
                 }
     });
-
+    // if (features.length == 0 ){
+        const features_const = ['Wi-Fi','Stage','Sound System','VIP','Parking','Security Personnel','CCTV','Terrace']
+    // }
     // Add features to Features table and create relationships in Compound_Features table
-    for (const feature of features) {
+    for (const feature of features_const) {
+    // for (const feature of features) {
         const feature_id = (await pool.query('SELECT * FROM Features WHERE name = $1', [feature])).rows[0].id
         await pool.query('INSERT INTO Compound_Features (compound_id, feature_id) VALUES ($1, $2)', [compound_id, feature_id]);
       }
@@ -46,9 +50,12 @@ export const createCompound = async (req, res , next) => {
       'INSERT INTO locations (id, x, y) VALUES ($1, $2, $3) ',
       [compound_id, location.x, location.y]
     );
+    await pool.query('COMMIT');
 
     res.status(201).json({message: 'compound created successfully.'})
+
   } catch (err) {
+    await pool.query('ROLLBACK');
     next(err)
   }
 };
