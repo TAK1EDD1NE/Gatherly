@@ -153,21 +153,13 @@ CREATE TABLE reviews (
     user_id INT NOT NULL,
     compound_id INT NOT NULL,
     comment TEXT NOT NULL,
+    rating INT CHECK (serving_rating BETWEEN 1 AND 5),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (compound_id) REFERENCES compounds(id) ON DELETE CASCADE
 );
 
 
--- ratings table
-CREATE TABLE ratings(
-    review_id INT PRIMARY KEY,
-    serving_rating INT CHECK (serving_rating BETWEEN 1 AND 5),
-    cleanliness_rating INT CHECK (cleanliness_rating BETWEEN 1 AND 5),
-    comfort_rating INT CHECK (comfort_rating BETWEEN 1 AND 5),
-    logistics_rating INT CHECK (logistics_rating BETWEEN 1 AND 5),
-    FOREIGN KEY (review_id) REFERENCES reviews(id) ON DELETE CASCADE
-);
 
 -- NOTIFICATIONS TABLE
 CREATE TABLE notifications (
