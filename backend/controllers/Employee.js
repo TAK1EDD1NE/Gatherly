@@ -212,6 +212,61 @@ export const getEmployeeEventTasks = async (req, res,next)=> {
     }
 }
 
+export const getEmployeesByAdminId = async (req, res, next) => {
+    const {id :adminId} = req.user;
+  
+    try {
+      // First, get compounds for this admin
+      const compoundsQuery = `
+        SELECT id FROM compounds 
+        WHERE admin_id = $1
+      `;
+      const compoundsResult = await pool.query(compoundsQuery, [adminId]);
+      
+      // If no compounds found, return empty array
+      if (compoundsResult.rows.length === 0) {
+        return res.json({ total: 0, employees: [] });
+      }
+  
+      // Get compound IDs
+      const compoundIds = compoundsResult.rows.map(row => row.id);
+      
+      // Get unique employee IDs from compound_employees
+      const employeesQuery = `
+      SELECT DISTINCT employee_id 
+      FROM compound_employees 
+      WHERE compound_id = ANY($1)
+      `;
+      const employeesResult = await pool.query(employeesQuery, [compoundIds]);
+      
+      // If no employees found, return empty array
+      if (employeesResult.rows.length === 0) {
+          return res.status(200).json({ total: 0, employees: [] });
+        }
+        
+        console.log('nami');
+      // Get employee profiles
+      const employeeIds = employeesResult.rows.map(row => row.employee_id);
+      const profilesQuery = `
+        SELECT 
+          id, 
+          username, 
+          email 
+        FROM users 
+        WHERE id = ANY($1)
+      `;
+      const profilesResult = await pool.query(profilesQuery, [employeeIds]);
+  
+      res.json({
+        total: profilesResult.rows.length,
+        employees: profilesResult.rows
+      });
+    } catch (error) {
+      next(error)
+    }
+  };
+  
+
 // Remove task from event
 export const removeTask = async (req, res,next)=> {
     try {
