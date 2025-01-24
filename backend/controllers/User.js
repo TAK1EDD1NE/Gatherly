@@ -4,8 +4,8 @@ import bcrypt from 'bcrypt'
 import cloudinary from '../api/cloudinary.js'
 import { transporter } from '../api/nodemailer.js';
 
-const  generate_token= (user_id) => {
-  return jwt.sign(user_id , process.env.ACCESS_TOKEN_SECRET)
+const  generate_token= (user) => {
+  return jwt.sign(user , process.env.ACCESS_TOKEN_SECRET)
 }
 
 export const signup = async (req, res, next) => {
@@ -55,7 +55,9 @@ export const login = async(req, res, next) => {
       }    
       const pwd_correct = await bcrypt.compare(password, user.password) 
       
-      const token = generate_token(user.id)
+      console.log(user);
+      
+      const token = generate_token(user)
       res.cookie('tigerToken', token, {
         httpOnly: true,
         expires: new Date(Date.now() + 864e5),
