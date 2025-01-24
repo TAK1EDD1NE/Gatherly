@@ -1,81 +1,82 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import SidebarComponent from "../components/sideBar";
+import TopBar from "../components/TopBar";
+import EventCard from "../components/eventCard";
 
 const EventList = () => {
   const events = [
-    { id: 1, name: 'Event one', type: 'party or conference' },
-    { id: 2, name: 'Event one', type: 'party or conference', isNew: true },
-    { id: 3, name: 'Event one', type: 'party or conference' },
-    { id: 4, name: 'Event one', type: 'party or conference' },
-    { id: 5, name: 'Event one', type: 'party or conference' },
-    { id: 6, name: 'Event one', type: 'party or conference', isNew: true },
+    { title: "Event one", type: "meeting or conference", isNew: false },
+    { title: "Event two", type: "party or gaming", isNew: true },
+    { title: "Event three", type: "party or conference", isNew: false },
+    { title: "Event four", type: "drinking or conference", isNew: false },
+    { title: "Event one", type: "party or conference", isNew: true },
+    { title: "Event one", type: "party or conference", isNew: false },
   ];
 
+  const [currentPage, setCurrentPage] = useState("/employees");
+
+  const [Filter, setFilter] = useState("");
+
+  const filteredEvents = events.filter(
+    (event) =>
+      event.title.toLowerCase().includes(Filter.toLowerCase())
+  );
+
+  
+
   return (
-    <div className="flex h-screen bg-gray-100">
-      <aside className="w-64 bg-white border-r">
-        {/* Sidebar content (same as Dashboard) */}
-      </aside>
-      <main className="flex-1 p-8">
-        <h1 className="mb-6 text-2xl font-semibold">Salle Amizoure</h1>
-        <div className="p-6 mb-8 text-white bg-purple-600 rounded-lg">
-          <h2 className="mb-2 text-xl font-semibold">Salle Amizour</h2>
-          <h3 className="mb-2 text-3xl font-bold">manage your events in our software</h3>
-          <p className="mb-4">enter her you description please</p>
-          <button className="px-4 py-2 text-white bg-green-500 rounded-md">Today events</button>
-        </div>
-        <div className="flex items-center justify-between mb-6">
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Search"
-              className="py-2 pl-10 pr-4 border rounded-md"
-            />
-            <svg
-              className="absolute left-3 top-2.5 h-5 w-5 text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
+    <div className="flex w-screen min-h-screen bg-white shadow-2xl rounded-">
+      <SidebarComponent currentPage={currentPage} onNavigate={setCurrentPage} />
+      <div className="flex-1 px-6">
+        <TopBar />
+        <div className="px-5 py-7 bg-slate-100">
+          <div className="flex items-center justify-between mb-8">
+            <h1 className="text-2xl font-bold text-gray-700">Evenements</h1>
           </div>
-          <select className="px-4 py-2 border rounded-md">
-            <option>all events</option>
-          </select>
-        </div>
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
-          {events.map((event) => (
-            <div key={event.id} className="relative p-6 bg-white rounded-lg shadow">
-              <div className="flex items-center mb-4">
-                <div className="p-2 mr-4 bg-purple-100 rounded-full">
-                  <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <div>
-                  <h3 className="font-semibold">{event.name}</h3>
-                  <p className="text-sm text-gray-500">{event.type}</p>
-                </div>
-              </div>
-              {event.isNew && (
-                <span className="absolute px-2 py-1 text-xs text-white bg-green-500 rounded-full top-2 right-2">
-                  new
-                </span>
-              )}
+          <div className="flex items-center justify-between mb-8">
+            <div className="bg-[#F362EA] p-8 rounded-3xl w-full">
+              <h1 className="text-3xl font-bold mb-4">Salle Amizour</h1>
+              <p className="text-xl mb-6">Manage your events in our software</p>
+              <button
+                variant="primary"
+                className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-3xl"
+              >
+                Today events
+              </button>
             </div>
-          ))}
+          </div>
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex-1 mx-6">
+              <input
+                type="text"
+                id="Filter"
+                placeholder="Search..."
+                className="w-1/2 px-4 py-2 bg-white rounded-md focus:outline-none text-gray-700 focus:ring-2 focus:ring-[#F362EA]"
+                value={Filter}
+              />
+            </div>
+            <button
+              type="button"
+              className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-[#F362EA] border border-transparent rounded-md shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              all events
+            </button>
+          </div>
+          <div className="grid w-full grid-cols-1 gap-8 p-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3">
+            {events.map((event, index) => (
+              <EventCard
+                key={index}
+                title={event.title}
+                type={event.type}
+                isNew={event.isNew}
+              />
+            ))}
+          </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 };
 
 export default EventList;
-

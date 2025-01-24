@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import SidebarComponent from "../components/sideBar";
 import TopBar from "../components/TopBar";
+import AddEmployeePopup from "../components/AddEmployeePopup";
+import { Add } from "@mui/icons-material";
 
 const EmployeeList = () => {
   const employees = [
@@ -47,6 +49,16 @@ const EmployeeList = () => {
   ];
 
   const [currentPage, setCurrentPage] = useState("/employees");
+
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+
+  const handleOpenPopup = () => {
+    setIsPopupOpen(true);
+  };
+
+  const handleClosePopup = () => {
+    setIsPopupOpen(false);
+  };
 
   // State variables to manage the filtering options
   const [nameFilter, setNameFilter] = useState("");
@@ -214,12 +226,13 @@ const EmployeeList = () => {
 
               {/* Add Employee button */}
               <div className="flex justify-end p-4 bg-gray-100 rounded-b-lg">
-                <button className="flex items-center px-4 py-2 text-white bg-[#F362EA] rounded-md hover:bg-[#F362EA]">
-                  {/* <PlusCircle className="mr-2" /> */}
+                <button className="flex items-center px-4 py-2 text-white bg-[#F362EA] rounded-md hover:bg-[#F362EA]" onClick={handleOpenPopup}>
+                  <Add/>
                   Add Employee
                 </button>
               </div>
             </div>
+            <AddEmployeePopup isOpen={isPopupOpen} onClose={handleClosePopup} />
           </main>
         </div>
       </div>

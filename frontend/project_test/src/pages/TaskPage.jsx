@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import SidebarComponent from "../components/sideBar";
 import TopBar from "../components/TopBar";
 import TaskComponent from "../components/taskComponent";
+import { Add } from "@mui/icons-material";
+import AddNewTask from "../components/AddNewTask";
 
 const task = [
   { id: 1, name: "Meeting with CEO" },
@@ -13,6 +15,13 @@ const task = [
   { id: 7, name: "Update File" },
 ];
 
+const Employees = [
+  { id: 1, name: 'John Doe', department: 'Engineering' },
+  { id: 2, name: 'Jane Smith', department: 'Design' },
+  { id: 3, name: 'Mike Johnson', department: 'Marketing' },
+  { id: 4, name: 'Sarah Williams', department: 'Sales' }
+];
+
 const TasksPage = () => {
   const handleTaskDelete = (taskId) => {
     // Logic to delete the task with the given taskId
@@ -20,6 +29,16 @@ const TasksPage = () => {
   };
 
   const [currentPage, setCurrentPage] = useState("/tasks");
+
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  
+    const handleOpenPopup = () => {
+      setIsPopupOpen(true);
+    };
+  
+    const handleClosePopup = () => {
+      setIsPopupOpen(false);
+    };
 
   return (
     <div className="flex w-screen min-h-screen bg-white shadow-2xl rounded-">
@@ -32,7 +51,9 @@ const TasksPage = () => {
             <button
               type="button"
               className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-[#F362EA] border border-transparent rounded-md shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              onClick={handleOpenPopup}
             >
+              <Add/>
               Add New Task
             </button>
           </div>
@@ -47,6 +68,7 @@ const TasksPage = () => {
           </div>
         </div>
       </div>
+      <AddNewTask isOpen={isPopupOpen} onClose={handleClosePopup} employees={Employees}/>
     </div>
   );
 };
