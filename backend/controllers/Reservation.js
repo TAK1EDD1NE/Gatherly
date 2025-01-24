@@ -1,5 +1,5 @@
-import stripe  from '../api/stripe.js';
 import pool from '../lib/db.js'
+import { stripe } from '../api/stripe.js';
 
 // Step 1: User initiates reservation request
 // export const createReservationRequest=  async (req, res,next)=> {
@@ -75,8 +75,8 @@ import pool from '../lib/db.js'
 //     return res.status(200).json({ message: 'Reservation rejected' });
 //     }
 
-//     // Create Stripe PaymentIntent
-//     const paymentIntent = await stripe.paymentIntents.create({
+//     // Create Stripe paymentURL
+//     const paymentURL = await stripe.paymentURLs.create({
 //     amount: amount * 100, // Convert to cents
 //     currency: 'usd',
 //     metadata: { reservationId }
@@ -88,12 +88,12 @@ import pool from '../lib/db.js'
 //         SET status = 'awaiting_payment', 
 //         payment_intent_id = $2
 //         WHERE id = $1`,
-//     [reservationId, paymentIntent.id]
+//     [reservationId, paymentURL.id]
 //     );
 
 //     return res.status(200).json({
 //     message: 'Reservation approved',
-//     clientSecret: paymentIntent.client_secret
+//     clientSecret: paymentURL.client_secret
 //     });
 // } catch (error) {
 //     console.error('Error responding to reservation:', error);
@@ -105,19 +105,19 @@ import pool from '../lib/db.js'
 // export const handlePaymentCompletion=  async (req, res,next)=>{
 
 // try {
-//     const { paymentIntentId } = req.body;
+//     const { paymentURLId } = req.body;
 
 //     // Verify payment status with Stripe
-//     const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+//     const paymentURL = await stripe.paymentURLs.retrieve(paymentURLId);
     
-//     if (paymentIntent.status !== 'succeeded') {
+//     if (paymentURL.status !== 'succeeded') {
 //     return res.status(400).json({ error: 'Payment not successful' });
 //     }
 
 //     // Update reservation status
 //     await pool.query(
 //     'UPDATE reservations SET status = $1 WHERE payment_intent_id = $2',
-//     ['confirmed', paymentIntentId]
+//     ['confirmed', paymentURLId]
 //     );
 
 //     return res.status(200).json({ message: 'Reservation confirmed' });
@@ -179,7 +179,8 @@ export const createReservation = async (req, res) => {
             'SELECT * FROM events WHERE id = $1 AND client_id = $2 AND status = $3',
             [eventId, userId, 'accepted-owner']
         );
-
+        // console.log(eventResult.rows[0]);
+        
         if (!eventResult.rows[0]) {
             await pool.query('ROLLBACK');
             return res.status(404).json({ 
@@ -192,7 +193,8 @@ export const createReservation = async (req, res) => {
             'SELECT SUM(price) as total FROM payments WHERE event_id = $1',
             [eventId]
         );
-
+        // console.log(paymentsResult.rows[0]);
+        
         const totalAmount = paymentsResult.rows[0].total;
 
         if (!totalAmount) {
@@ -203,21 +205,15 @@ export const createReservation = async (req, res) => {
         }
 
         // Create payment intent with Stripe
-        const paymentIntent = await stripe.paymentIntents.create({
-            amount: totalAmount * 100, // Convert to cents for Stripe
-            currency: 'usd',
-            metadata: { eventId },
-            automatic_payment_methods: {
-                enabled: true,
-            },
-        });
+        const paymentURL = await createStripeCheckoutSession(eventId)
+    console.log(paymentURL);
 
         // Create reservation
         const reservationResult = await pool.query(
             `INSERT INTO reservations (user_id, event_id, payment_intent_id) 
              VALUES ($1, $2, $3) 
              RETURNING *`,
-            [userId, eventId, paymentIntent.id]
+            [userId, eventId, paymentURL]
         );
 
         // Update event status to processing payment
@@ -232,8 +228,7 @@ export const createReservation = async (req, res) => {
 
         return res.status(201).json({
             message: 'Reservation initiated',
-            clientSecret: paymentIntent.client_secret,
-            paymentIntentId: paymentIntent.id,
+            paymentURLId: paymentURL,
             amount: totalAmount,
             reservation: reservationResult.rows[0]
         });
@@ -276,3 +271,29 @@ export const handlePaymentSuccess = async (req, res) => {
         });
     }
 };
+async function createStripeCheckoutSession( eventId) {
+    try {
+        
+        const session = await stripe.checkout.sessions.create({
+            line_items: [
+                {
+                    price_data: {
+                        currency: "usd",
+                        product_data: { name: `event` },
+                        unit_amount:  100,
+                    },
+                    quantity: 1,
+                },
+            ],
+            metadata: { eventId },
+            mode: "payment",
+            shipping_address_collection: { allowed_countries: ["US", "BR"] },
+            success_url: `https://www.google.com/`,
+            cancel_url: `https://www.google.com/`,
+        });
+        console.log('insidweghuiwrhg');
+      return session.url;
+    } catch (error) {
+      throw new Error("Failed to create checkout session");
+    }
+  }

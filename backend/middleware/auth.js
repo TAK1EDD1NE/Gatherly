@@ -13,7 +13,6 @@ export const auth_token = (roles) =>{
             }
             
             const verified = jwt.verify(token , process.env.ACCESS_TOKEN_SECRET)
-            console.log(verified);
             
             if(!verified){
                 res.sendStatus(401)

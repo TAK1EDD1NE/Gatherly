@@ -12,6 +12,7 @@ import eventRoutes from './routes/Event.js'
 import employeeRoutes from './routes/Employee.js'
 import paymentRoutes from './routes/Payment.js'
 import reviewRoutes from './routes/Review.js'
+import reservationRoute from './routes/Reservation.js'
 dotenv.config()
 
 const app = express()
@@ -44,5 +45,7 @@ app.use('/api/event/', eventRoutes)
 app.use('/api/employee/', employeeRoutes)
 app.use('/api/payment', paymentRoutes)
 app.use('/api/review/',reviewRoutes)
+app.use('/api/reservation/',reservationRoute)
+
 app.use(errorHandler)
 export default app
