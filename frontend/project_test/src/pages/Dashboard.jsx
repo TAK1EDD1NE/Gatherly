@@ -1,4 +1,3 @@
-// DashboardPage.js
 import React, { useState, useEffect } from 'react';
 import SidebarComponent from '../components/sideBar';
 import MetricsSection from '../components/metricsSection';

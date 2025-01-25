@@ -4,8 +4,7 @@ import Footer from '../components/footer';
 import { ChatBubbleOutline, LocationOn, StarOutline, Send } from '@mui/icons-material';
 import Web6 from "../assets/Web6.jpg";
 import Background from "../assets/Background.jpg"
-import CreditCards from "../assets/creditCards.png"
-
+import CreditCards from "../assets/CreditCards.png"
 import HeaderBar from '../components/headerBar';
 
 const LandingPage = () => {
