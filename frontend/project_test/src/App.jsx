@@ -15,6 +15,7 @@ import Reservation from "./pages/reservation";
 import CreateEvent from "./pages/createEvent";
 import MyTasks from "./pages/MyTasks";
 import EventManagement from "./pages/EventManagement";
+import EditProfile from "./pages/EditProfile";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
         <Routes>        
             <Route exact path="/" element={<LandingPage/>} />
             <Route path="/dashboard" element={<Dashboard/>} />
+            <Route path="/editprofile" element={<EditProfile/>} />
             <Route path="/employees" element={<EmployeeList/>} />
             <Route path="/mytasks" element={<MyTasks/>} />
             <Route path="/tasks" element={<TasksPage/>} />
