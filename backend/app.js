@@ -13,6 +13,8 @@ import employeeRoutes from './routes/Employee.js'
 import paymentRoutes from './routes/Payment.js'
 import reviewRoutes from './routes/Review.js'
 import reservationRoute from './routes/Reservation.js'
+import { swaggerUi, swaggerSpec } from  './swaggerConfig.js'
+
 dotenv.config()
 
 const app = express()
@@ -47,5 +49,7 @@ app.use('/api/payment', paymentRoutes)
 app.use('/api/review/',reviewRoutes)
 app.use('/api/reservation/',reservationRoute)
 
+// Serve Swagger UI
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use(errorHandler)
 export default app
