@@ -15,12 +15,12 @@ const HeaderBar = () => {
         <nav>
           <ul className="flex space-x-4">
             <li>
-              <Link to="/home" className="text-gray-700">
+              <Link to="/" className="text-gray-700">
                 Home
               </Link>
             </li>
             <li>
-              <Link to="/hall-expo" className="text-gray-700">
+              <Link to="/salles" className="text-gray-700">
                 Hall Expo
               </Link>
             </li>
@@ -30,12 +30,12 @@ const HeaderBar = () => {
               </Link>
             </li>
             <li>
-              <Link to="/sign-in" className="text-gray-700">
+              <Link to="/signin" className="text-gray-700">
                 Sign In
               </Link>
             </li>
             <li>
-              <Link to="/sign-up" className="px-4 py-2 text-gray-700 bg-pink-400 bg-pigray-700nk-200 text- rounded-2xl bg-opacity-40">
+              <Link to="/signup" className="px-4 py-2 text-gray-700 bg-pink-400 bg-pigray-700nk-200 text- rounded-2xl bg-opacity-40">
                 Sign Up
               </Link>
             </li>

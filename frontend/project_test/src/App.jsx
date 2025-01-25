@@ -30,7 +30,7 @@ function App() {
             <Route path="/salles" element={<SallePage/>} />
             <Route path="/confirm" element={<ConfirmationCode/>} />
             <Route path="/reset-password" element={<PasswordReset/>} />
-            <Route path="/login" element={<Login/>} />
+            <Route path="/signin" element={<Login/>} />
             <Route path="/signup" element={<SignUp/>} />  
             <Route path="/forgotpassword" element={<ForgotPassword/>} />     
             <Route path="/stripeid" element={<StripeId/>} /> 

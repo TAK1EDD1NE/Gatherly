@@ -1,6 +1,7 @@
 import React from 'react';
 import SalleSearchComponent from '../components/salleSearch';
 import Footer from '../components/footer';
+import { Link } from 'react-router-dom';
 import { ChatBubbleOutline, LocationOn, StarOutline, Send } from '@mui/icons-material';
 import Web6 from "../assets/Web6.jpg";
 import Background from "../assets/Background.jpg"
@@ -163,7 +164,7 @@ const LandingPage = () => {
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {events.map(event => (
-            <div key={event.id} className="overflow-hidden bg-white shadow-lg rounded-xl">
+            <Link key={event.id} className="overflow-hidden bg-white shadow-lg rounded-xl" to="reservation">
               <img 
                 src={event.image} 
                 alt={event.title}
@@ -190,7 +191,7 @@ const LandingPage = () => {
                   )}
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
 
