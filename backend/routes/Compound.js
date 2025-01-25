@@ -7,10 +7,10 @@ const compoundRoutes = express.Router()
 
 /**
  * @swagger
- * /compounds/create:
+ * /compound/create:
  *   post:
  *     summary: Creates a new compound
- *     description: This endpoint is used by admins to create a new compound.
+ *     description: This endpoint is used by admins to create a new compound, including name, location, gallery, and features.
  *     tags:
  *       - Compounds
  *     security:
@@ -26,13 +26,21 @@ const compoundRoutes = express.Router()
  *                 type: string
  *               location:
  *                 type: string
- *               price:
- *                 type: number
- *                 format: float
+ *               gallery:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 description: A list of URLs for gallery images of the compound.
+ *               features:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 description: A list of features available in the compound (e.g., Wi-Fi, parking, etc.).
  *             required:
  *               - name
  *               - location
- *               - price
+ *               - gallery
+ *               - features
  *     responses:
  *       201:
  *         description: Compound successfully created
