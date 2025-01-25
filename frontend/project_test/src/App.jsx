@@ -14,6 +14,7 @@ import StripeId from "./pages/stripeId";
 import Reservation from "./pages/reservation";
 import CreateEvent from "./pages/createEvent";
 import MyTasks from "./pages/MyTasks";
+import EventManagement from "./pages/EventManagement";
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
             <Route path="/reservation" element={<Reservation/>} />  
             <Route path="/stripeid" element={<StripeId/>} />      
             <Route path="/createevent" element={<CreateEvent/>} />
+            <Route path="/eventmanagement" element={<EventManagement/>} />
         </Routes>
       </BrowserRouter>
     </div>
