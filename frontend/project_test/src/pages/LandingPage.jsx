@@ -2,6 +2,10 @@ import React from 'react';
 import SalleSearchComponent from '../components/salleSearch';
 import Footer from '../components/footer';
 import { ChatBubbleOutline, LocationOn, StarOutline, Send } from '@mui/icons-material';
+import Web6 from "../assets/Web6.jpg";
+import Background from "../assets/Background.jpg"
+import CreditCards from "../assets/CreditCards.png"
+import HeaderBar from '../components/headerBar';
 
 const LandingPage = () => {
   const events = [
@@ -134,7 +138,8 @@ const LandingPage = () => {
   return (
     <div className="w-screen min-h-screen bg-white rounded-lg shadow-lg">
       {/* Hero Section */}
-      <section className="py-20 text-white bg-gradient-to-b from-purple-500 to-pink-500">
+      <section className="py-10 text-white flex-center bg-center bg-no-repeat bg-cover md:bg-gradient-to-b md:from-purple-500 md:to-pink-500 h-[768px]" style={{ backgroundImage: `url(${Web6})` }}>
+        <HeaderBar/>
         <div className="container px-4 mx-auto">
           <div className="max-w-2xl">
             <h1 className="mb-6 text-5xl font-bold">
@@ -195,10 +200,10 @@ const LandingPage = () => {
       </section>
 
       {/* About Us Section */}
-      <section className="py-16 bg-gradient-to-b from-pink-500 to-purple-500">
-        <div className="container px-4 mx-auto">
+      <section className="py-16 bg-top bg-cover md:bg-gradient-to-b md:from-pink-500 md:to-purple-500 h-[650px]" style={{ backgroundImage: `url(${Background})` }}>
+        <div className="container px-4 mx-auto mt-32">
           <h2 className="mb-8 text-3xl font-bold text-white">About Us</h2>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {teamMembers.map(member => (
               <div key={member.id} className="flex items-center p-4 space-x-4 bg-white rounded-xl">
                 <img 
@@ -220,26 +225,26 @@ const LandingPage = () => {
       <section className="container px-4 py-16 mx-auto">
         <div className="flex flex-col items-center justify-between md:flex-row">
           <div>
-            <h2 className="mb-4 text-2xl font-bold">Paiements en ligne acceptés</h2>
+            <h2 className="mb-4 text-4xl font-bold text-gray-700">Paiements en ligne acceptés</h2>
             <div className="flex flex-wrap gap-2">
-              <span className="px-4 py-2 text-sm text-gray-700 bg-gray-100 rounded-full">
+              <span className="px-4 py-2 text-2xl text-gray-700 bg-gray-100 rounded-full">
                 Visa & Mastercard
               </span>
-              <span className="px-4 py-2 text-sm text-gray-700 bg-gray-100 rounded-full">
+              <span className="px-4 py-2 text-2xl text-gray-700 bg-gray-100 rounded-full">
                 Estimer componants
               </span>
-              <span className="px-4 py-2 text-sm text-gray-700 bg-gray-100 rounded-full">
+              <span className="px-4 py-2 text-2xl text-gray-700 bg-gray-100 rounded-full">
                 Nombreux option
               </span>
-              <span className="px-4 py-2 text-sm text-gray-700 bg-gray-100 rounded-full">
+              <span className="px-4 py-2 text-2xl text-gray-700 bg-gray-100 rounded-full">
                 Facile componants
               </span>
             </div>
           </div>
-          <div className="relative mt-8 md:mt-0">
-            <div className="absolute w-64 h-40 transform bg-purple-600 -top-4 -left-4 rounded-xl rotate-6"></div>
-            <div className="absolute w-64 h-40 transform bg-pink-500 -top-2 -left-2 rounded-xl rotate-3"></div>
-            <div className="relative w-64 h-40 shadow-lg bg-gradient-to-r from-purple-600 to-pink-500 rounded-xl"></div>
+          <div className="relative mt-8 bg-center bg-cover md:mt-0" >
+            <div className="w-[613px] h-[571px] bg-cover bg-top" style={{ backgroundImage: `url(${CreditCards})` }}></div>
+            {/* <div className="absolute w-64 h-40 transform bg-pink-500 -top-2 -left-2 rounded-xl rotate-3"></div>
+            <div className="relative w-64 h-40 shadow-lg bg-gradient-to-r from-purple-600 to-pink-500 rounded-xl"></div> */}
           </div>
         </div>
       </section>
@@ -290,7 +295,7 @@ const LandingPage = () => {
 
       {/* Testimonials Section */}
       <section className="container px-4 py-16 mx-auto">
-        <h2 className="mb-8 text-2xl font-bold">Look What Our Customers Say!</h2>
+        <h2 className="mb-8 text-2xl font-bold text-gray-700">Look What Our Customers Say!</h2>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           {testimonials.map(testimonial => (
             <div key={testimonial.id} className="p-6 bg-white shadow-lg rounded-xl">
@@ -315,7 +320,7 @@ const LandingPage = () => {
         </div>
       </section>
       <section className="container px-4 py-16 mx-auto">
-      <footer className="py-8 text-white bg-gray-900">
+      <footer className="py-8 text-gray-800 bg-pink-100">
       <div className="container flex items-center justify-between mx-auto">
         <div className="menu">
           <ul className="flex space-x-6">

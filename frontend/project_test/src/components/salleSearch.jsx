@@ -18,7 +18,7 @@ const SalleSearchComponent = () => {
   };
 
   return (
-    <div className="flex items-center justify-between p-4 bg-white rounded-lg shadow-2xl">
+    <div className="flex items-center justify-between w-full p-4 bg-white border rounded-lg shadow-2xl">
       <div className="flex-1 mr-4">
         <label htmlFor="search-term" className="block mb-2 font-medium text-gray-700">
           Rechercher une Salle
