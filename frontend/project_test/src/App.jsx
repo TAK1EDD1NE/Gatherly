@@ -13,6 +13,7 @@ import ForgotPassword from "./pages/forgotPassword";
 import StripeId from "./pages/stripeId";
 import Reservation from "./pages/reservation";
 import CreateEvent from "./pages/createEvent";
+import MyTasks from "./pages/MyTasks";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
             <Route exact path="/" element={<LandingPage/>} />
             <Route path="/dashboard" element={<Dashboard/>} />
             <Route path="/employees" element={<EmployeeList/>} />
+            <Route path="/mytasks" element={<MyTasks/>} />
             <Route path="/tasks" element={<TasksPage/>} />
             <Route path="/events" element={<EventList/>} />
             <Route path="/salles" element={<SallePage/>} />
