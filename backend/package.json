@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "devStart": "nodemon app.js",
+    "dev": "nodemon app.js",
     "test": "vitest --coverage"
   },
   "keywords": [],
@@ -21,7 +21,9 @@
     "jsonwebtoken": "^9.0.2",
     "nodemailer": "^6.9.16",
     "pg": "^8.13.1",
-    "stripe": "^17.5.0"
+    "stripe": "^17.5.0",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
     "@types/pg": "^8.11.10",
