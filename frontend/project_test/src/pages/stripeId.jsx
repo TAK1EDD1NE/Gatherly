@@ -67,5 +67,4 @@ try{
 };
 
 export default StripeId;
-//;//
 
