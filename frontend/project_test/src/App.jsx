@@ -36,8 +36,7 @@ function App() {
             <Route path="/signup" element={<SignUp/>} />  
             <Route path="/forgotpassword" element={<ForgotPassword/>} />     
             <Route path="/stripeid" element={<StripeId/>} /> 
-            <Route path="/reservation" element={<Reservation/>} />  
-            <Route path="/stripeid" element={<StripeId/>} />      
+            <Route path="/reservation" element={<Reservation/>} />      
             <Route path="/createevent" element={<CreateEvent/>} />
             <Route path="/eventmanagement" element={<EventManagement/>} />
         </Routes>
