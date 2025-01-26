@@ -1,19 +1,8 @@
 import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import HeaderBar from "../components/headerBar";
-import {
-  ChatBubbleOutline,
-  LocationOn,
-  Star,
-  Send,
-} from "@mui/icons-material";
-import {
-  FaWifi,
-  FaLeaf,
-  FaTshirt,
-  FaSnowflake,
-  FaBicycle,
-} from "react-icons/fa";
-//import Calendar from "../components/Calendar";
+import { Star } from "@mui/icons-material";
+import { FaWifi, FaLeaf, FaTshirt, FaSnowflake, FaBicycle } from "react-icons/fa";
 import Amenities from "../components/amenities";
 import MapComponent from "../components/map";
 import axios from "axios";
@@ -25,8 +14,49 @@ import { Add } from "@mui/icons-material";
 const Reservation = () => {
   const [date, setDate] = useState(new Date());
   const [locationName, setLocationName] = useState();
-  const [coordinates, setCoordinates] = useState(null)
-  const simulatedPosition = [36.6439022,4.9036535 ];
+  const [coordinates, setCoordinates] = useState(null);
+  const { state } = useLocation(); // Access the event data passed via state
+
+  // Debugging: Log the state received
+  console.log("State received in Reservation page:", state);
+
+  const event = state?.event; // Destructure the event data
+
+  // Use the event data to populate the page
+  const placeData = {
+    title: event?.title || "Salle Amizour",
+    rating: event?.rating || 4.6,
+    numReviews: 7,
+    location: event?.locationName || "Bejaia",
+    position: event?.position || [36.6439022, 4.9036535], // Use event coordinates or default
+    images: [
+      {
+        id: 1,
+        imageUrl: event?.image || "/images/image1.png",
+        alt: "Room 1",
+      },
+      {
+        id: 2,
+        imageUrl: "/images/image2.png",
+        alt: "Room 2",
+      },
+      {
+        id: 3,
+        imageUrl: "/images/image3.png",
+        alt: "Room 3",
+      },
+      {
+        id: 4,
+        imageUrl: "/images/image4.png",
+        alt: "Kitchen",
+      },
+      {
+        id: 5,
+        imageUrl: "/images/image5.png",
+        alt: "Stairs",
+      },
+    ],
+  };
 
   const handleDateChange = (date) => {
     setDate(date);
@@ -69,45 +99,10 @@ const Reservation = () => {
       rating: 5,
       text: "Absolutely amazing! Gatherly turned my event into a stress-free experience. Highly recommend it to anyone looking for top-notch service.",
     },
-];
+  ];
 
-  const placeData = {
-    title: "Salle Amizour",
-    rating: 4.6,
-    numReviews: 7,
-    location: "Bejaia",
-    position: [36.6439022, 4.9036535], // Example coordinates (San Francisco)
-    images: [
-      {
-        id: 1,
-        imageUrl: "/images/image1.png",
-        alt: "Room 1",
-      },
-      {
-        id: 2,
-        imageUrl: "/images/image2.png",
-        alt: "Room 2",
-      },
-      {
-        id: 3,
-        imageUrl: "/images/image3.png",
-        alt: "Room 3",
-      },
-      {
-        id: 4,
-        imageUrl: "/images/image4.png",
-        alt: "Kitchen",
-      },
-      {
-        id: 5,
-        imageUrl: "/images/image5.png",
-        alt: "Stairs",
-      },
-    ],
-  };
-
-   // Fetch coordinates from an address
-   const fetchCoordinates = async (address) => {
+  // Fetch coordinates from an address
+  const fetchCoordinates = async (address) => {
     try {
       const response = await axios.get(
         `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json`
@@ -139,19 +134,15 @@ const Reservation = () => {
     }
   };
 
-  // Example: Fetch coordinates when the component mounts
+  // Fetch coordinates and location name when the component mounts
   useEffect(() => {
-    fetchCoordinates(placeData.location);
-  }, [placeData.location]);
-
-  useEffect(() => {
-    // Optionally fetch the name if the coordinates change
-    if (simulatedPosition) {
-      fetchLocationName(simulatedPosition[0], simulatedPosition[1]);
+    if (event?.position) {
+      fetchLocationName(event.position[0], event.position[1]);
     }
-  }, [simulatedPosition]);
-
-  
+    if (placeData.location) {
+      fetchCoordinates(placeData.location);
+    }
+  }, [event, placeData.location]);
 
   const renderImage = (image) => (
     <div className="w-full h-full">
@@ -162,6 +153,7 @@ const Reservation = () => {
       />
     </div>
   );
+
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
   const handleOpenPopup = () => {
@@ -268,21 +260,20 @@ const Reservation = () => {
                 <p className="text-gray-600">{testimonial.text}</p>
               </div>
             ))}
-            
           </div>
-            <div className="py-5">
+          <div className="py-5">
             <button className="py-5 text-white bg-pink-400 rounded-lg hover:shadow-xl" onClick={handleOpenPopup}>
-              <Add/>
+              <Add />
               add review
             </button>
-            </div>
+          </div>
         </section>
         <p className="font-bold text-gray-700">Votre emplacement</p>
         <div className="py-6">
           <MapComponent position={placeData.position} />
         </div>
       </div>
-         <AddReview isOpen={isPopupOpen} onClose={handleClosePopup}/>
+      <AddReview isOpen={isPopupOpen} onClose={handleClosePopup} />
     </div>
   );
 };

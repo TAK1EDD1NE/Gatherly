@@ -1,5 +1,4 @@
-import React from 'react';
-import SalleSearchComponent from '../components/salleSearch';
+import React, { useState } from 'react';
 import Footer from '../components/footer';
 import { Link } from 'react-router-dom';
 import { ChatBubbleOutline, LocationOn, Star, Send } from '@mui/icons-material';
@@ -9,8 +8,11 @@ import CreditCards from "../assets/CreditCards.png"
 import HeaderBar from '../components/headerBar';
 import LandingPageCard from '../components/landingPageCard';
 
-
 const LandingPage = () => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [locationFilter, setLocationFilter] = useState('');
+  const [dateFilter, setDateFilter] = useState('Any date');
+
   const events = [
     {
       id: 1,
@@ -61,41 +63,41 @@ const LandingPage = () => {
   ];
 
   const testimonials = [
-      {
-        id: 1,
-        name: "Emily Green",
-        image: "/images/femalepfp.png",
-        rating: 4,
-        text: "Gatherly was such a lifesaver! The platform made managing our event so smooth, and the support team was super helpful at every step.",
-      },
-      {
-        id: 2,
-        name: "Sophia Martinez",
-        image: "/images/femalepfp.png",
-        rating: 3,
-        text: "The service was decent but could improve in some areas, especially the communication during setup. Still, it was a good experience overall.",
-      },
-      {
-        id: 3,
-        name: "James Carter",
-        image: "/images/malepfp.jpg",
-        rating: 5,
-        text: "This was the best event management experience I’ve ever had. Everything was seamless, and my guests couldn’t stop praising the organization!",
-      },
-      {
-        id: 4,
-        name: "Liam Bennett",
-        image: "/images/malepfp.jpg",
-        rating: 2,
-        text: "Unfortunately, the experience didn’t meet my expectations. There were a lot of delays, and the process felt disorganized. Hoping they improve in the future.",
-      },
-      {
-        id: 5,
-        name: "Olivia Brown",
-        image: "/images/femalepfp.png",
-        rating: 5,
-        text: "Absolutely amazing! Gatherly turned my event into a stress-free experience. Highly recommend it to anyone looking for top-notch service.",
-      },
+    {
+      id: 1,
+      name: "Emily Green",
+      image: "/images/femalepfp.png",
+      rating: 4,
+      text: "Gatherly was such a lifesaver! The platform made managing our event so smooth, and the support team was super helpful at every step.",
+    },
+    {
+      id: 2,
+      name: "Sophia Martinez",
+      image: "/images/femalepfp.png",
+      rating: 3,
+      text: "The service was decent but could improve in some areas, especially the communication during setup. Still, it was a good experience overall.",
+    },
+    {
+      id: 3,
+      name: "James Carter",
+      image: "/images/malepfp.jpg",
+      rating: 5,
+      text: "This was the best event management experience I’ve ever had. Everything was seamless, and my guests couldn’t stop praising the organization!",
+    },
+    {
+      id: 4,
+      name: "Liam Bennett",
+      image: "/images/malepfp.jpg",
+      rating: 2,
+      text: "Unfortunately, the experience didn’t meet my expectations. There were a lot of delays, and the process felt disorganized. Hoping they improve in the future.",
+    },
+    {
+      id: 5,
+      name: "Olivia Brown",
+      image: "/images/femalepfp.png",
+      rating: 5,
+      text: "Absolutely amazing! Gatherly turned my event into a stress-free experience. Highly recommend it to anyone looking for top-notch service.",
+    },
   ];
 
   const teamMembers = [
@@ -125,11 +127,20 @@ const LandingPage = () => {
     },
   ];
 
+  // Filter events based on search criteria
+  const filteredEvents = events.filter(event => {
+    const matchesSearchTerm = event.title.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesLocation = event.position ? true : false; // Add location filtering logic if needed
+    const matchesDate = dateFilter === 'Any date' || true; // Add date filtering logic if needed
+
+    return matchesSearchTerm && matchesLocation && matchesDate;
+  });
+
   return (
     <div className="w-screen min-h-screen bg-white rounded-lg shadow-lg">
       {/* Hero Section */}
       <section className="py-10 text-white flex-center bg-center bg-no-repeat bg-cover md:bg-gradient-to-b md:from-purple-500 md:to-pink-500 h-[768px]" style={{ backgroundImage: `url(${Web6})` }}>
-        <HeaderBar/>
+        <HeaderBar />
         <div className="container px-4 mx-auto">
           <div className="max-w-2xl">
             <h1 className="mb-6 text-5xl font-bold">
@@ -139,23 +150,57 @@ const LandingPage = () => {
               Découvrez des lieux uniques pour vos événements
             </p>
             <Link to="/signup">
-            <button className="px-8 py-3 font-semibold text-purple-600 transition-colors bg-white rounded-full hover:bg-opacity-90">
-              Get Started
-            </button>
+              <button className="px-8 py-3 font-semibold text-purple-600 transition-colors bg-white rounded-full hover:bg-opacity-90">
+                Get Started
+              </button>
             </Link>
           </div>
         </div>
       </section>
 
-      {/* Events Grid Section */}
+      {/* Search Bar Section */}
       <section className="container px-4 py-16 mx-auto">
         <div className="flex items-center justify-center mb-8">
-          {/* <SalleSearchComponent/> */}
+          <div className="flex items-center justify-between w-full p-4 bg-white border rounded-lg shadow-2xl">
+            <div className="flex-1 mr-4">
+              <label htmlFor="search-term" className="block mb-2 font-medium text-gray-700">
+                Rechercher une Salle
+              </label>
+              <input
+                type="text"
+                id="search-term"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              />
+            </div>
+            
+            <div className="flex-1">
+              <label htmlFor="date" className="block mb-2 font-medium text-gray-700">
+                Date
+              </label>
+              <select
+                id="date"
+                value={dateFilter}
+                onChange={(e) => setDateFilter(e.target.value)}
+                className="w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              >
+                <option value="Any date">Any date</option>
+                <option value="Today">Today</option>
+                <option value="Tomorrow">Tomorrow</option>
+                <option value="This week">This week</option>
+                <option value="Next week">Next week</option>
+                <option value="This month">This month</option>
+                <option value="Next month">Next month</option>
+              </select>
+            </div>
+          </div>
         </div>
 
+        {/* Events Grid Section */}
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {events.map(event => (
-            <LandingPageCard event={event}/>
+          {filteredEvents.map(event => (
+            <LandingPageCard key={event.id} event={event} />
           ))}
         </div>
 
@@ -208,8 +253,6 @@ const LandingPage = () => {
           </div>
           <div className="relative mt-8 bg-center bg-cover md:mt-0" >
             <div className="w-[613px] h-[571px] bg-cover bg-top" style={{ backgroundImage: `url(${CreditCards})` }}></div>
-            {/* <div className="absolute w-64 h-40 transform bg-pink-500 -top-2 -left-2 rounded-xl rotate-3"></div>
-            <div className="relative w-64 h-40 shadow-lg bg-gradient-to-r from-purple-600 to-pink-500 rounded-xl"></div> */}
           </div>
         </div>
       </section>
@@ -284,50 +327,52 @@ const LandingPage = () => {
           ))}
         </div>
       </section>
-      <footer className="py-12 text-gray-700 bg-[#FFE5FF]">
-      <div className="container flex flex-col justify-between mx-auto md:flex-row">
-        {/* Menu Section */}
-        <div className="mb-8 md:mb-0">
-          <h3 className="mb-4 text-lg font-bold">Menu</h3>
-          <ul className="space-y-2">
-            <li><a href="/" className="hover:text-gray-300">Home</a></li>
-            <li><a href="/our-services" className="hover:text-gray-300">Our services</a></li>
-            <li><a href="/properties" className="hover:text-gray-300">Properties</a></li>
-            <li><a href="/contact" className="hover:text-gray-300">Contact us</a></li>
-          </ul>
-        </div>
 
-        {/* Contact Information */}
-        <div className="mb-8 md:mb-0">
-          <h3 className="mb-4 text-lg font-bold">Contact us</h3>
-          <div className="space-y-2">
-            <p>05 54 76 76 11</p>
-            <a href="mailto:gatherlycontact@gmail.com" className="hover:text-gray-300">gatherlycontact@gmail.com</a>
-            <p>Amizour, N-76 Béjaia</p>
+      {/* Footer Section */}
+      <footer className="py-12 text-gray-700 bg-[#FFE5FF]">
+        <div className="container flex flex-col justify-between mx-auto md:flex-row">
+          {/* Menu Section */}
+          <div className="mb-8 md:mb-0">
+            <h3 className="mb-4 text-lg font-bold">Menu</h3>
+            <ul className="space-y-2">
+              <li><a href="/" className="hover:text-gray-300">Home</a></li>
+              <li><a href="/our-services" className="hover:text-gray-300">Our services</a></li>
+              <li><a href="/properties" className="hover:text-gray-300">Properties</a></li>
+              <li><a href="/contact" className="hover:text-gray-300">Contact us</a></li>
+            </ul>
+          </div>
+
+          {/* Contact Information */}
+          <div className="mb-8 md:mb-0">
+            <h3 className="mb-4 text-lg font-bold">Contact us</h3>
+            <div className="space-y-2">
+              <p>05 54 76 76 11</p>
+              <a href="mailto:gatherlycontact@gmail.com" className="hover:text-gray-300">gatherlycontact@gmail.com</a>
+              <p>Amizour, N-76 Béjaia</p>
+            </div>
+          </div>
+
+          {/* "Your Opinion About Gatherly!" Section */}
+          <div>
+            <h3 className="mb-4 text-lg font-bold">Your Opinion About Gatherly!</h3>
+            <form>
+              <textarea
+                className="w-full p-4 mb-4 text-white bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Your message (optional)."
+                rows={3}
+              ></textarea>
+              <button
+                type="submit"
+                className="px-4 py-2 font-medium text-white bg-blue-500 rounded-md hover:bg-blue-600"
+              >
+                Send your message
+              </button>
+            </form>
           </div>
         </div>
-
-        {/* "Your Opinion About Gatherly!" Section */}
-        <div>
-          <h3 className="mb-4 text-lg font-bold">Your Opinion About Gatherly!</h3>
-          <form>
-            <textarea
-              className="w-full p-4 mb-4 text-white bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Your message (optional)."
-              rows={3}
-            ></textarea>
-            <button
-              type="submit"
-              className="px-4 py-2 font-medium text-white bg-blue-500 rounded-md hover:bg-blue-600"
-            >
-              Send your message
-            </button>
-          </form>
-        </div>
-      </div>
-    </footer>
+      </footer>
     </div>
   );
-}
+};
 
 export default LandingPage;

@@ -1,39 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Link } from 'react-router-dom';
-import { ChatBubbleOutline, LocationOn, StarOutline, Send } from '@mui/icons-material';
-import axios from "axios";
+import { LocationOn, StarOutline } from '@mui/icons-material';
 
+const LandingPageCard = ({ event }) => {
+  console.log("Event data being passed:", event); // Debugging: Log the event data
 
-const LandingPageCard = ({event}) => {
-    const [locationName, setLocationName] = useState(null)
-    
-    const fetchLocationName = async (lat, lng) => {
-        try {
-          const geoResponse = await axios.get(
-            `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`
-          );
-          setLocationName(geoResponse.data.display_name);
-          console.log("Location Name:", geoResponse.data.display_name);
-        } catch (error) {
-          console.error("Geocoding error:", error);
-          setLocationName("Location not found");
-        }
-      };
-
-      useEffect(() => {
-          // Optionally fetch the name if the coordinates change
-          if (event.position) {
-            fetchLocationName(event.position[0], event.position[1]);
-          }
-        }, [event.position]);
-
-        console.log(event)
-    
   return (
     <Link
-      key={event.id}
+      to="/reservation"
+      state={{ event }} // Pass the event data as state
       className="overflow-hidden bg-white shadow-lg rounded-xl"
-      to="reservation"
     >
       <img
         src={event.image}
@@ -47,7 +23,7 @@ const LandingPageCard = ({event}) => {
         </div>
         <div className="flex items-center text-sm text-gray-500">
           <LocationOn fontSize="small" className="mr-1" />
-          <span>{locationName}</span>
+          <span>{event.locationName}</span>
         </div>
         <div className="flex items-center justify-between mt-2">
           <div className="flex items-center">
