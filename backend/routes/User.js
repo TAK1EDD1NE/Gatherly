@@ -103,7 +103,7 @@ userRoutes.get('/signout', signout)
  *       404:
  *         description: User not found
  */
-userRoutes.get('/get-user-by-id/:user_id',auth_token(ROLES.all), get_user_by_id)
+userRoutes.get('/get-user-by-id',auth_token(ROLES.all), get_user_by_id)
 /**
  * @swagger
  * /users/delete:

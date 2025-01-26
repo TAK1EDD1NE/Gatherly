@@ -100,27 +100,17 @@ const AddSale = ({ isOpen, onClose }) => {
               onChange={(e) => setDescription(e.target.value)}
             />
           </div>
-          <div className="mb-4">
-            <input
-              type="text"
-              id="address"
-              name="address"
-              className="w-full px-3 py-2 text-gray-700 bg-white border rounded-lg focus:shadow-lg focus:border-pink-400"
-              placeholder="Enter address"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-            />
-          </div>
-          <div className="mb-4">
-            <div
+      
+          {/* <div className="mb-4"> */}
+            {/* <div
               onClick={toggleDropdown}
               className="w-full px-4 py-2 text-gray-700 bg-white border rounded-lg shadow-sm cursor-pointer"
             >
               {Array.isArray(features) && features.length > 0
                 ? features.join(", ")
                 : "Select features (click to open)"}
-            </div>
-            {dropdownOpen && (
+            </div> */}
+            {/* {dropdownOpen && (
               <ul className="z-10 w-full mt-1 text-gray-600 bg-white border border-gray-300 rounded-lg shadow-lg">
                 {options.map((option) => (
                   <li
@@ -135,8 +125,8 @@ const AddSale = ({ isOpen, onClose }) => {
                 ))}
               </ul>
             )}
-          </div>
-          <div className="mb-4">
+          </div> */}
+          {/* <div className="mb-4">
             <input
               type="number"
               id="price"
@@ -146,12 +136,12 @@ const AddSale = ({ isOpen, onClose }) => {
               value={price}
               onChange={(e) => setPrice(e.target.value)}
             />
-          </div>
+          </div> */}
           <button
             type="submit"
             className="bg-[#F362EA] hover:shadow-lg hover:shadow-[#F362EA] text-white font-bold py-2 px-4 rounded-lg w-full"
           >
-            Add employee
+            ajoute une salle 
           </button>
         </form>
       </div>

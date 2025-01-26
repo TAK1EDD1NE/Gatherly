@@ -31,7 +31,8 @@ try{
   else{
     alert("Signup failed. Please try again.");
   }
-}catch{
+}catch(error){
+  console.error("Error fetching profile:", error);
 
 }
     // Handle password reset logic
@@ -108,7 +109,13 @@ try{
             >
               signup
             </button>
-            <p className='font-bold text-center text-gray-700'>sign up as admin <East/></p>
+            <button
+              type="submit"
+              className='font-bold text-center text-gray-700'
+            >
+              sign up as admin<East/>
+            </button>
+            {/* <p className='font-bold text-center text-gray-700'>sign up as admin <East/></p> */}
           </form>
         </div>
       </main>

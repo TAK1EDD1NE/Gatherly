@@ -1,16 +1,23 @@
 import React, { useState } from 'react';
 import HeaderBar from '../components/headerBar';
 import background from "../assets/signin.jpg"
+import postData from '../api/postData';
 
 const StripeId = () => {
     const [stripeId, setStripeId] = useState('');
-    const [adress, setAdress] = useState('');
+    // const [adress, setAdress] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle adress reset logic
-    console.log('StripeId:', stripeId);
-    console.log('adress reset requested for:', adress);
+try{
+  debugger
+    const res = await postData('/admin/join', {stripe_id:stripeId})
+    window.location.href = '/editprofile';
+    
+}catch(err){
+  console.error("Error fetching profile:", err);
+}
+    // console.log('adress reset requested for:', adress);
   };
 
   return (
@@ -35,7 +42,7 @@ const StripeId = () => {
                 required
               />
             </div>
-            <div className="mb-4">
+            {/* <div className="mb-4">
               <input
                 type="text"
                 id="address"
@@ -45,7 +52,7 @@ const StripeId = () => {
                 onChange={(e) => setAdress(e.target.value)}
                 required
               />
-            </div>
+            </div> */}
             <button
               type="submit"
               className="w-full py-2 font-semibold text-white transition duration-300 bg-pink-500 rounded-lg hover:shadow-lg"

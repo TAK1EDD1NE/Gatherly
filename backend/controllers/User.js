@@ -80,17 +80,8 @@ export const login = async(req, res, next) => {
 
 export const get_user_by_id = async(req, res ,next) =>{
   try{
-    const {user_id} = req.params
     
-    const query = 'SELECT * FROM users WHERE id = $1'
-    const user = (await pool.query(query , [user_id])).rows[0]
-    
-    if(!user){
-      res.status(404)
-      throw Error('user not found.')
-    }
-    
-    return res.json(user)
+    return res.json(req.user)
   }catch(err){
     next(err)
   }

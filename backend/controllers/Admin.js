@@ -15,6 +15,7 @@ export const join_as_admin = async (req, res, next)=> {
         res.status(500)
         throw new Error("internal sever error!")
       }
+      console.log('ya fesngksdgd');
       
       return res.status(201).json({ message: 'Successfully joined as admin' });
   } catch (err) {
