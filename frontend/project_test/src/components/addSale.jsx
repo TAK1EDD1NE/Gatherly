@@ -11,7 +11,7 @@ const AddSale = ({ isOpen, onClose }) => {
   // Reference to modal container
   const modalRef = useRef(null);
 
-  const options = ["Fridge", "Air Conditioner", "Heater", "Washing Machine"];
+  const options = ["Wi-Fi", "Stage", "Dance Floor", "VIP", "Terrace", "Garden", "Pool", "Sound System", "Bar", "Elevator", "Parking", "Cleaning Staff", "Security Personnel", "CCTV", "Photographer"];
 
   // Close modal if clicked outside
   useEffect(() => {
