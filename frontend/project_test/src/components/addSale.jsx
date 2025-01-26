@@ -6,9 +6,12 @@ const AddSale = ({ isOpen, onClose }) => {
   const [description, setDescription] = useState("");
   const [features, setFeatures] = useState([]);
   const [price, setPrice] = useState("");
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   // Reference to modal container
   const modalRef = useRef(null);
+
+  const options = ["Wi-Fi", "Stage", "Dance Floor", "VIP", "Terrace", "Garden", "Pool", "Sound System", "Bar", "Elevator", "Parking", "Cleaning Staff", "Security Personnel", "CCTV", "Photographer"];
 
   // Close modal if clicked outside
   useEffect(() => {
@@ -26,8 +29,24 @@ const AddSale = ({ isOpen, onClose }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     // Here you would add logic to save the new employee data
-    console.log({ username, email, password, address });
+    console.log({ name, address, description, features, price });
     onClose();
+  };
+
+  const toggleDropdown = () => {
+    setDropdownOpen((prev) => !prev);
+    console.log(dropdownOpen);
+  };
+
+  const handleFeatureSelection = (option) => {
+    setFeatures((prev) => {
+      // Ensure `prev` is an array, even if something goes wrong
+      if (!Array.isArray(prev)) prev = [];
+      // Toggle the selected option
+      return prev.includes(option)
+        ? prev.filter((feature) => feature !== option)
+        : [...prev, option];
+    });
   };
 
   const handleClose = () => {
@@ -91,19 +110,31 @@ const AddSale = ({ isOpen, onClose }) => {
               value={address}
               onChange={(e) => setAddress(e.target.value)}
             />
-            </div>
-            <div className="mb-4">
-            <select
-              name="features"
-              id="features"
-              className="w-full px-3 py-2 text-gray-700 bg-white border rounded-lg focus:shadow-lg focus:border-pink-400"
-              placeholder="Enter address"
-              value={features}
-              onChange={(e) => setFeatures(e.target.value)}
+          </div>
+          <div className="mb-4">
+            <div
+              onClick={toggleDropdown}
+              className="w-full px-4 py-2 text-gray-700 bg-white border rounded-lg shadow-sm cursor-pointer"
             >
-                <option value="fridge">Fridge</option>
-                <option value="airConditionner">Air conditionner</option>
-            </select>
+              {Array.isArray(features) && features.length > 0
+                ? features.join(", ")
+                : "Select features (click to open)"}
+            </div>
+            {dropdownOpen && (
+              <ul className="z-10 w-full mt-1 text-gray-600 bg-white border border-gray-300 rounded-lg shadow-lg">
+                {options.map((option) => (
+                  <li
+                    key={option}
+                    className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${
+                      features.includes(option) ? "bg-gray-100 font-bold" : ""
+                    }`}
+                    onClick={() => handleFeatureSelection(option)}
+                  >
+                    {option}
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
           <div className="mb-4">
             <input
@@ -115,7 +146,7 @@ const AddSale = ({ isOpen, onClose }) => {
               value={price}
               onChange={(e) => setPrice(e.target.value)}
             />
-            </div>
+          </div>
           <button
             type="submit"
             className="bg-[#F362EA] hover:shadow-lg hover:shadow-[#F362EA] text-white font-bold py-2 px-4 rounded-lg w-full"
