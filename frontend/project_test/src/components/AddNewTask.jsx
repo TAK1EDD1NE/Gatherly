@@ -51,15 +51,15 @@ const AddNewTask = ({ isOpen, onClose, employees }) => {
         isOpen ? '' : 'hidden'
       }`}
     >
-      <div ref={modalRef} className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md flex-center">
-        <h2 className="text-2xl font-bold mb-4 text-gray-700">Add new employee for team work</h2>
+      <div ref={modalRef} className="w-full max-w-md p-6 bg-white rounded-lg shadow-lg flex-center">
+        <h2 className="mb-4 text-2xl font-bold text-gray-700">Add new employee for team work</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <input
               type="text"
               id="title"
               name="title"
-              className="border rounded-lg py-2 px-3 w-full bg-white focus:shadow-lg text-gray-700 focus:border-pink-400"
+              className="w-full px-3 py-2 text-gray-700 bg-white border rounded-lg focus:shadow-lg focus:border-pink-400"
               placeholder="Enter title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
@@ -70,20 +70,20 @@ const AddNewTask = ({ isOpen, onClose, employees }) => {
               type="text"
               id="description"
               name="description"
-              className="border rounded-lg py-2 px-3 w-full bg-white focus:shadow-lg text-gray-700 focus:border-pink-400"
+              className="w-full px-3 py-2 text-gray-700 bg-white border rounded-lg focus:shadow-lg focus:border-pink-400"
               placeholder="Enter description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
           </div>
           <div className="mb-4">
-            <DatePicker selected={deadline} onChange={setDeadline} dateFormat="yyyy-MM-dd" className='border rounded-lg py-2 px-3 w-full bg-white focus:shadow-lg text-gray-700 focus:border-pink-400'/>
+            <DatePicker selected={deadline} onChange={setDeadline} dateFormat="yyyy-MM-dd" className='w-full px-3 py-2 text-gray-700 bg-white border rounded-lg focus:shadow-lg focus:border-pink-400'/>
           </div>
           <div className="mb-4">
-            <label htmlFor="assigned-employees" className="block text-gray-700 font-bold mb-2">
+            <label htmlFor="assigned-employees" className="block mb-2 font-bold text-gray-700">
               Assigned Employees
             </label>
-            <div className="border rounded-lg py-2 px-3 w-full">
+            <div className="w-full px-3 py-2 border rounded-lg">
               {employees.map((employee) => (
                 <div
                   key={employee.id}

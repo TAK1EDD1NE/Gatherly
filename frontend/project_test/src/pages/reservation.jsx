@@ -25,7 +25,8 @@ import { Add } from "@mui/icons-material";
 const Reservation = () => {
   const [date, setDate] = useState(new Date());
   const [locationName, setLocationName] = useState();
-  const simulatedPosition = { lat: 36.6439022, lng: 4.9036535 };
+  const [coordinates, setCoordinates] = useState(null)
+  const simulatedPosition = [36.6439022,4.9036535 ];
 
   const handleDateChange = (date) => {
     setDate(date);
@@ -110,25 +111,52 @@ const Reservation = () => {
     ],
   };
 
-  useEffect(() => {
-    const fetchPosition = async () => {
-      const { lat, lng } = simulatedPosition;
-
-      // Perform reverse geocoding to get the location name
-      try {
-        const geoResponse = await axios.get(
-          `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`
-        );
-        setLocationName(geoResponse.data.display_name);
-        console.log(locationName);
-      } catch (error) {
-        console.error("Geocoding error:", error);
-        setLocationName("Location not found");
+   // Fetch coordinates from an address
+   const fetchCoordinates = async (address) => {
+    try {
+      const response = await axios.get(
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json`
+      );
+      if (response.data.length > 0) {
+        const { lat, lon } = response.data[0];
+        setCoordinates([parseFloat(lat), parseFloat(lon)]);
+        console.log(coordinates);
+      } else {
+        console.error("No results found for the given address.");
+        setCoordinates(null);
       }
-    };
+    } catch (error) {
+      console.error("Error fetching geocode data:", error);
+    }
+  };
 
-    fetchPosition();
-  }, []);
+  // Fetch location name from coordinates
+  const fetchLocationName = async (lat, lng) => {
+    try {
+      const geoResponse = await axios.get(
+        `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`
+      );
+      setLocationName(geoResponse.data.display_name);
+      console.log("Location Name:", geoResponse.data.display_name);
+    } catch (error) {
+      console.error("Geocoding error:", error);
+      setLocationName("Location not found");
+    }
+  };
+
+  // Example: Fetch coordinates when the component mounts
+  useEffect(() => {
+    fetchCoordinates(placeData.location);
+  }, [placeData.location]);
+
+  useEffect(() => {
+    // Optionally fetch the name if the coordinates change
+    if (simulatedPosition) {
+      fetchLocationName(simulatedPosition[0], simulatedPosition[1]);
+    }
+  }, [simulatedPosition]);
+
+  
 
   const renderImage = (image) => (
     <div className="w-full h-full">

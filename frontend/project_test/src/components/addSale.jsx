@@ -1,9 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import axios from "axios";
 
 const AddSale = ({ isOpen, onClose }) => {
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
+  const [coordinates, setCoordinates] = useState(null)
   const [description, setDescription] = useState("");
   const [features, setFeatures] = useState([]);
   const [price, setPrice] = useState("");
@@ -27,10 +29,34 @@ const AddSale = ({ isOpen, onClose }) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [onClose]);
 
+  // Fetch coordinates from an address
+  const fetchCoordinates = async (address) => {
+    try {
+      const response = await axios.get(
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json`
+      );
+      if (response.data.length > 0) {
+        const { lat, lon } = response.data[0];
+        setCoordinates([parseFloat(lat), parseFloat(lon)]);
+        console.log(coordinates);
+      } else {
+        console.error("No results found for the given address.");
+        setCoordinates(null);
+      }
+    } catch (error) {
+      console.error("Error fetching geocode data:", error);
+    }
+  };
+
+
+  useEffect(() => {
+    fetchCoordinates(address);
+  }, [address]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
     // Here you would add logic to save the new employee data
-    console.log({ name, address, description, features, price });
+    console.log({ name, coordinates, description, features, price });
     onClose();
   };
 
@@ -65,7 +91,7 @@ const AddSale = ({ isOpen, onClose }) => {
         className="w-full max-w-md p-6 bg-white rounded-lg shadow-lg flex-center"
       >
         <h2 className="mb-4 text-2xl font-bold text-gray-700">
-          Add new employee for team work
+          Add Salle
         </h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
@@ -99,17 +125,6 @@ const AddSale = ({ isOpen, onClose }) => {
               placeholder="Enter description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-            />
-          </div>
-          <div className="mb-4">
-            <input
-              type="text"
-              id="address"
-              name="address"
-              className="w-full px-3 py-2 text-gray-700 bg-white border rounded-lg focus:shadow-lg focus:border-pink-400"
-              placeholder="Enter address"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
             />
           </div>
           <div className="mb-4">
@@ -150,9 +165,10 @@ const AddSale = ({ isOpen, onClose }) => {
           </div>
           <button
             type="submit"
+            onSubmit={handleSubmit}
             className="bg-[#F362EA] hover:shadow-lg hover:shadow-[#F362EA] text-white font-bold py-2 px-4 rounded-lg w-full"
           >
-            Add employee
+            Confirm Salle
           </button>
         </form>
       </div>

@@ -7,6 +7,8 @@ import Web6 from "../assets/Web6.jpg";
 import Background from "../assets/Background.jpg"
 import CreditCards from "../assets/CreditCards.png"
 import HeaderBar from '../components/headerBar';
+import LandingPageCard from '../components/landingPageCard';
+
 
 const LandingPage = () => {
   const events = [
@@ -15,43 +17,43 @@ const LandingPage = () => {
       image: "/api/placeholder/400/300",
       title: "Garden Bay Villa Pool",
       price: "$500.00",
-      location: "California, US",
+      position: [36.6439022, 4.9036535],
       rating: 4.7,
       isPopular: true
     },
     {
-      id: 1,
+      id: 2,
       image: "/api/placeholder/400/300",
       title: "Garden Bay Villa Pool",
       price: "$500.00",
-      location: "California, US",
+      position: [36.6439022, 4.9036535],
       rating: 4.7,
       isPopular: true
     },
     {
-      id: 1,
+      id: 3,
       image: "/api/placeholder/400/300",
       title: "Garden Bay Villa Pool",
       price: "$500.00",
-      location: "California, US",
+      position: [36.6439022, 4.9036535],
       rating: 4.7,
       isPopular: true
     },
     {
-      id: 1,
+      id: 4,
       image: "/api/placeholder/400/300",
       title: "Garden Bay Villa Pool",
       price: "$500.00",
-      location: "California, US",
+      position: [36.6439022, 4.9036535],
       rating: 4.7,
       isPopular: true
     },
     {
-      id: 1,
+      id: 5,
       image: "/api/placeholder/400/300",
       title: "Garden Bay Villa Pool",
       price: "$500.00",
-      location: "California, US",
+      position: [36.6439022, 4.9036535],
       rating: 4.7,
       isPopular: true
     },
@@ -99,41 +101,28 @@ const LandingPage = () => {
   const teamMembers = [
     {
       id: 1,
-      name: "Rosalina Christiansen",
+      name: "ishak",
       role: "Founder",
       image: "/api/placeholder/80/80"
     },
     {
-      id: 1,
-      name: "Rosalina Christiansen",
+      id: 2,
+      name: "taki",
       role: "Founder",
       image: "/api/placeholder/80/80"
     },
     {
-      id: 1,
-      name: "Rosalina Christiansen",
+      id: 3,
+      name: "chemsdin",
       role: "Founder",
       image: "/api/placeholder/80/80"
     },
     {
-      id: 1,
-      name: "Rosalina Christiansen",
+      id: 4,
+      name: "miscipsa",
       role: "Founder",
       image: "/api/placeholder/80/80"
     },
-    {
-      id: 1,
-      name: "Rosalina Christiansen",
-      role: "Founder",
-      image: "/api/placeholder/80/80"
-    },
-    {
-      id: 1,
-      name: "Rosalina Christiansen",
-      role: "Founder",
-      image: "/api/placeholder/80/80"
-    },
-    // Repeated for other team members...
   ];
 
   return (
@@ -149,9 +138,11 @@ const LandingPage = () => {
             <p className="mb-8 text-xl opacity-90">
               Découvrez des lieux uniques pour vos événements
             </p>
+            <Link to="/signup">
             <button className="px-8 py-3 font-semibold text-purple-600 transition-colors bg-white rounded-full hover:bg-opacity-90">
               Get Started
             </button>
+            </Link>
           </div>
         </div>
       </section>
@@ -164,34 +155,7 @@ const LandingPage = () => {
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {events.map(event => (
-            <Link key={event.id} className="overflow-hidden bg-white shadow-lg rounded-xl" to="reservation">
-              <img 
-                src={event.image} 
-                alt={event.title}
-                className="object-cover w-full h-48"
-              />
-              <div className="p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-semibold">{event.title}</h3>
-                  <span className="font-bold text-purple-600">{event.price}</span>
-                </div>
-                <div className="flex items-center text-sm text-gray-500">
-                  <LocationOn fontSize="small" className="mr-1" />
-                  <span>{event.location}</span>
-                </div>
-                <div className="flex items-center justify-between mt-2">
-                  <div className="flex items-center">
-                    <StarOutline className="w-4 h-4 text-yellow-400" />
-                    <span className="ml-1 text-sm">{event.rating}</span>
-                  </div>
-                  {event.isPopular && (
-                    <span className="text-sm text-red-500">
-                      <span className="mr-1">🔥</span> Popular
-                    </span>
-                  )}
-                </div>
-              </div>
-            </Link>
+            <LandingPageCard event={event}/>
           ))}
         </div>
 

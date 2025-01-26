@@ -19,7 +19,7 @@ const Sidebar = () => {
 
   const extra = [
     { label: 'Settings', path: '/editprofile', icon: <Settings/> },
-    { label: 'Logout', path: '/logout', icon: <Logout /> },
+    { label: 'Logout', path: '/', icon: <Logout /> },
   ]
 
   return (

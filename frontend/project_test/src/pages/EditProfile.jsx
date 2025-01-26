@@ -3,6 +3,7 @@ import HeaderBar from "../components/headerBar";
 import GuestList from "../components/GuestList";
 import EventInfo from "../components/EventInfo";
 import AddedEvents from "../components/AddedEvent";
+import { Link } from "react-router-dom";
 
 const EditProfile = () => {
   const [fullName, setFullName] = useState("");
@@ -38,9 +39,11 @@ const EditProfile = () => {
               className="object-cover w-full h-full"
             />
           </div>
-          <button className="px-4 py-2 font-medium text-white bg-blue-500 rounded-md hover:bg-blue-600" type="submit">
-            Edit profile
+          <Link to="/stripeid">
+          <button className="px-4 py-2 font-medium text-white bg-blue-500 rounded-md hover:bg-blue-600" >
+            switch to admin
           </button>
+          </Link>
         </div>
 
         <form onSubmit={handleSubmit}>
@@ -116,8 +119,9 @@ const EditProfile = () => {
 
           <button
             className="w-full px-4 py-2 font-medium text-white bg-blue-500 rounded-md hover:bg-blue-600"
+            type="submit"
           >
-            Switch to admin
+            edit profile
           </button>
         </form>
       </div>

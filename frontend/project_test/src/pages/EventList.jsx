@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import SidebarComponent from "../components/sideBar";
 import TopBar from "../components/TopBar";
@@ -6,28 +6,24 @@ import EventCard from "../components/eventCard";
 
 const EventList = () => {
   const events = [
-    { title: "Event one", type: "meeting or conference", isNew: false },
-    { title: "Event two", type: "party or gaming", isNew: true },
-    { title: "Event three", type: "party or conference", isNew: false },
-    { title: "Event four", type: "drinking or conference", isNew: false },
-    { title: "Event one", type: "party or conference", isNew: true },
-    { title: "Event one", type: "party or conference", isNew: false },
+    { id: 1, title: "Event one", type: "meeting or conference", isNew: false },
+    { id: 2, title: "Event two", type: "party or gaming", isNew: true },
+    { id: 3, title: "Event three", type: "party or conference", isNew: false },
+    { id: 4, title: "Event four", type: "drinking or conference", isNew: false },
+    { id: 5, title: "Event five", type: "party or conference", isNew: true },
+    { id: 6, title: "Event six", type: "party or conference", isNew: false },
   ];
 
-  const [currentPage, setCurrentPage] = useState("/employees");
+  const [filterText, setFilterText] = useState("");
 
-  const [Filter, setFilter] = useState("");
-
-  const filteredEvents = events.filter(
-    (event) =>
-      event.title.toLowerCase().includes(Filter.toLowerCase())
+  // Filter the events based on the input text
+  const filteredEvents = events.filter((event) =>
+    event.title.toLowerCase().includes(filterText.toLowerCase())
   );
-
-  
 
   return (
     <div className="flex w-screen min-h-screen bg-white shadow-2xl rounded-">
-      <SidebarComponent currentPage={currentPage} onNavigate={setCurrentPage} />
+      <SidebarComponent currentPage={"/employees"} onNavigate={() => {}} />
       <div className="flex-1 px-6">
         <TopBar />
         <div className="px-5 py-7 bg-slate-100">
@@ -50,28 +46,31 @@ const EventList = () => {
             <div className="flex-1 mx-6">
               <input
                 type="text"
-                id="Filter"
                 placeholder="Search..."
                 className="w-1/2 px-4 py-2 bg-white rounded-md focus:outline-none text-gray-700 focus:ring-2 focus:ring-[#F362EA]"
-                value={Filter}
+                value={filterText} // Controlled input
+                onChange={(e) => setFilterText(e.target.value)} // Update state
               />
             </div>
             <button
               type="button"
               className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-[#F362EA] border border-transparent rounded-md shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >
-              all events
+              All events
             </button>
           </div>
           <div className="grid w-full grid-cols-1 gap-8 p-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3">
-            {events.map((event, index) => (
-              <Link key={event.id} className="overflow-hidden bg-white shadow-lg rounded-xl hover:shadow-2xl" to="/eventmanagement">
-              <EventCard
-                key={index}
-                title={event.title}
-                type={event.type}
-                isNew={event.isNew}
-              />
+            {filteredEvents.map((event) => (
+              <Link
+                key={event.id} // Add unique key
+                className="overflow-hidden bg-white shadow-lg rounded-xl hover:shadow-2xl"
+                to="/eventmanagement"
+              >
+                <EventCard
+                  title={event.title}
+                  type={event.type}
+                  isNew={event.isNew}
+                />
               </Link>
             ))}
           </div>
