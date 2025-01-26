@@ -19,7 +19,7 @@ const GuestList = ({ guestList, onAdd, onRemove }) => {
       <div className="flex">
         <input
           type="text"
-          className="flex-grow px-3 py-2 mr-4 text-gray-700 bg-white border rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+          className="flex-grow px-3 py-2 mr-4 text-gray-700 bg-white border rounded-2xl focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
           placeholder="Tab her to search"
           value={newGuest}
           onChange={(e) => setNewGuest(e.target.value)}

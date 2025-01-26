@@ -36,11 +36,11 @@ const EventList = () => {
           </div>
           <div className="flex items-center justify-between mb-8">
             <div className="bg-[#F362EA] p-8 rounded-3xl w-full">
-              <h1 className="text-3xl font-bold mb-4">Salle Amizour</h1>
-              <p className="text-xl mb-6">Manage your events in our software</p>
+              <h1 className="mb-4 text-3xl font-bold">Salle Amizour</h1>
+              <p className="mb-6 text-xl">Manage your events in our software</p>
               <button
                 variant="primary"
-                className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-3xl"
+                className="px-4 py-2 font-bold text-white bg-green-500 hover:bg-green-600 rounded-3xl"
               >
                 Today events
               </button>
@@ -65,12 +65,14 @@ const EventList = () => {
           </div>
           <div className="grid w-full grid-cols-1 gap-8 p-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3">
             {events.map((event, index) => (
+              <Link key={event.id} className="overflow-hidden bg-white shadow-lg rounded-xl hover:shadow-2xl" to="/eventmanagement">
               <EventCard
                 key={index}
                 title={event.title}
                 type={event.type}
                 isNew={event.isNew}
               />
+              </Link>
             ))}
           </div>
         </div>

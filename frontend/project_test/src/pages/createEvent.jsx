@@ -41,7 +41,7 @@ const CreateEvent = () => {
       </div>
       <div className="flex items-center justify-between px-6 py-4">
         <h1 className="text-2xl font-bold">Create Event</h1>
-        <div>
+        <div className="flex items-center justify-between">
         <button className="px-8 py-2 font-medium text-white bg-pink-200 rounded hover:bg-pink-300">
           not created
         </button>
@@ -53,7 +53,7 @@ const CreateEvent = () => {
       <div className="flex">
       {/* Add guest list section */}
       <div className="w-1/2 p-6">
-        <h2 className="mb-4 text-lg font-medium">Add guest list</h2>
+        <h2 className="mb-4 text-lg font-medium rounded-2xl">Add guest list</h2>
         <GuestList guestList={guestList} onAdd={addGuest} onRemove={removeGuest} />
       </div>
 

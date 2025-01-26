@@ -19,7 +19,7 @@ const TopBar = () => {
           <input
             type="text"
             placeholder="Search..."
-            className="w-full px-4 py-2 bg-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-[#F362EA]"
+            className="w-full px-4 py-2 bg-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-[#F362EA] text-gray-700"
           />
         </div>
 

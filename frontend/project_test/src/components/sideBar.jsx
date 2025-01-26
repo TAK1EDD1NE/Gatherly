@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Dashboard, People, Favorite, Forum, Checklist, Inventory, AttachMoney, CalendarMonth, TaskAlt,  } from '@mui/icons-material';
+import { Dashboard, People, Favorite, Forum, Checklist, Inventory, AttachMoney, CalendarMonth, TaskAlt, Settings, Logout, Festival  } from '@mui/icons-material';
 
 const Sidebar = () => {
   const location = useLocation();
@@ -9,26 +9,17 @@ const Sidebar = () => {
   const sidebarItems = [
     { label: 'Dashboard', path: '/dashboard', icon: <Dashboard/> },
     { label: 'Employees', path: '/employees', icon: <People/> },
-    { label: 'Favorites', path: '/favorites', icon: <Favorite/> },
-    { label: 'Inbox', path: '/inbox', icon: <Forum/> },
-    { label: 'Order Lists', path: '/order-lists', icon: <Checklist/> },
-    { label: 'Product Stock', path: '/product-stock', icon: <Inventory/> },
   ];
 
   const pages = [
     { label: 'Pricing', path: '/pricing', icon: <AttachMoney/> },
-    { label: 'Calender', path: '/calender', icon: <CalendarMonth/> },
     { label: 'To-Do', path: '/tasks', icon: <TaskAlt/> },
-    { label: 'Contact', path: '/contact', icon: 'user' },
-    { label: 'Invoice', path: '/invoice', icon: 'file-text' },
-    { label: 'UI Elements', path: '/ui-elements', icon: 'layers' },
-    { label: 'Team', path: '/team', icon: 'users' },
-    { label: 'Table', path: '/table', icon: 'table' },
+    { label: 'Salle', path: '/salles', icon: <Festival/> },
   ];
 
   const extra = [
-    { label: 'Settings', path: '/settings', icon: 'settings' },
-    { label: 'Logout', path: '/logout', icon: 'log-out' },
+    { label: 'Settings', path: '/editprofile', icon: <Settings/> },
+    { label: 'Logout', path: '/logout', icon: <Logout /> },
   ]
 
   return (

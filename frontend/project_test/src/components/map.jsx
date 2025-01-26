@@ -1,36 +1,29 @@
-import React, { useState } from 'react';
-import ReactMapGL, { Marker } from 'react-map-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
+import React from "react";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 
-const LocationMap = () => {
-  // Mapbox access token
-  const MAPBOX_TOKEN = 'YOUR_MAPBOX_ACCESS_TOKEN';
-
-  // Initial viewport settings
-  const [viewport, setViewport] = useState({
-    latitude: 44.8378,
-    longitude: -0.5792,
-    zoom: 13,
-    width: '100%',
-    height: '500px',
-  });
-
-  // Marker position
-  const markerPosition = [44.8378, -0.5792];
-
+const MapComponent = ({position}) => {
+  // Define the center position of the map
   return (
-    <ReactMapGL
-      {...viewport}
-      onViewportChange={setViewport}
-      mapboxApiAccessToken={MAPBOX_TOKEN}
-      mapStyle="mapbox://styles/mapbox/streets-v11"
+    <MapContainer
+      center={position}
+      zoom={5}
+      style={{ height: "400px", width: "100%" }}
     >
-      <Marker latitude={markerPosition[1]} longitude={markerPosition[0]}>
-        {/* Add custom marker content here */}
-        <div>Exact location</div>
+      {/* TileLayer provides the map tiles (e.g., streets, terrain, etc.) */}
+      <TileLayer
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+      />
+
+      {/* Add a marker at the map's center */}
+      <Marker position={position}>
+        <Popup>
+          San Francisco <br /> A lovely city!
+        </Popup>
       </Marker>
-    </ReactMapGL>
+    </MapContainer>
   );
 };
 
-export default LocationMap;
+export default MapComponent;
+

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import SidebarComponent from "../components/sideBar";
 import TopBar from "../components/TopBar";
 import SalleCard from "../components/SalleCard";
+import { Add } from "@mui/icons-material";
+import AddSale from "../components/addSale";
 
 const SallePage = () => {
   const cards = [
@@ -33,6 +35,16 @@ const SallePage = () => {
 
   const [currentPage, setCurrentPage] = useState("/salles");
 
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+    
+      const handleOpenPopup = () => {
+        setIsPopupOpen(true);
+      };
+    
+      const handleClosePopup = () => {
+        setIsPopupOpen(false);
+      };
+
   return (
     <div className="flex w-screen min-h-screen bg-white shadow-2xl rounded-">
       <SidebarComponent currentPage={currentPage} onNavigate={setCurrentPage} />
@@ -44,7 +56,9 @@ const SallePage = () => {
             <button
               type="button"
               className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-[#F362EA] border border-transparent rounded-md shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              onClick={handleOpenPopup}
             >
+              <Add/>
               Add New Salle
             </button>
           </div>
@@ -63,6 +77,7 @@ const SallePage = () => {
           </div>
         </div>
       </div>
+      <AddSale isOpen={isPopupOpen} onClose={handleClosePopup}/>
     </div>
   );
 };

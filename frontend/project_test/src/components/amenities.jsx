@@ -11,7 +11,7 @@ const Amenities = () => {
   ];
 
   return (
-    <div className="mt-4">
+    <div className="p-8 mt-4">
       <h2 className="mb-2 text-xl font-bold">What this place offers</h2>
       <div className="grid grid-cols-3 gap-4">
         {amenities.map((amenity) => (
