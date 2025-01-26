@@ -121,7 +121,7 @@ const AddSale = ({ isOpen, onClose }) => {
                 : "Select features (click to open)"}
             </div>
             {dropdownOpen && (
-              <ul className="absolute z-10 w-full mt-1 text-gray-600 bg-white border border-gray-300 rounded-lg shadow-lg">
+              <ul className="z-10 w-full mt-1 text-gray-600 bg-white border border-gray-300 rounded-lg shadow-lg">
                 {options.map((option) => (
                   <li
                     key={option}
