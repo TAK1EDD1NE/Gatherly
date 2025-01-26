@@ -150,7 +150,7 @@ const LandingPage = () => {
       {/* Events Grid Section */}
       <section className="container px-4 py-16 mx-auto">
         <div className="flex items-center justify-center mb-8">
-          <SalleSearchComponent/>
+          {/* <SalleSearchComponent/> */}
         </div>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
