@@ -4,33 +4,42 @@ import TopBar from "../components/TopBar";
 import SalleCard from "../components/SalleCard";
 import { Add } from "@mui/icons-material";
 import AddSale from "../components/addSale";
+import { Link } from "react-router-dom";
 
 const SallePage = () => {
   const cards = [
     {
-      image: "https://example.com/image1.jpg",
+      image: "/images/salle1.jpg",
       title: "Salle amizoure",
-      rating: 4.6,
+      rating: 4.1,
       capacity: "30-50 people",
       price: "123000DA",
       availability: true,
     },
     {
-      image: "https://example.com/image1.jpg",
-      title: "Salle amizoure",
+      image: "/images/salle2.jpg",
+      title: "Salle tipaza",
       rating: 4.6,
       capacity: "30-50 people",
-      price: "123000DA",
+      price: "180000DA",
       availability: true,
     },
     {
-      image: "https://example.com/image1.jpg",
-      title: "Salle amizoure",
-      rating: 4.6,
+      image: "/images/salle3.jpg",
+      title: "Salle sous",
+      rating: 4.0,
       capacity: "30-50 people",
-      price: "123000DA",
+      price: "223000DA",
       availability: true,
     },
+    {
+      image: "/images/salle4.jpg",
+      title: "Salle maghnia",
+      rating: 3.6,
+      capacity: "30-50 people",
+      price: "120000DA",
+      availability: true,
+    }
   ];
 
   const [currentPage, setCurrentPage] = useState("/salles");
@@ -64,6 +73,7 @@ const SallePage = () => {
           </div>
           <div className="grid w-full grid-cols-1 gap-8 p-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3">
             {cards.map((card, index) => (
+              <Link to="/reservation">
               <SalleCard
                 key={index}
                 image={card.image}
@@ -73,6 +83,7 @@ const SallePage = () => {
                 price={card.price}
                 availability={card.availability}
               />
+              </Link>
             ))}
           </div>
         </div>

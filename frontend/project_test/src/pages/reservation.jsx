@@ -3,7 +3,7 @@ import HeaderBar from "../components/headerBar";
 import {
   ChatBubbleOutline,
   LocationOn,
-  StarOutline,
+  Star,
   Send,
 } from "@mui/icons-material";
 import {
@@ -36,40 +36,40 @@ const Reservation = () => {
   const testimonials = [
     {
       id: 1,
-      name: "B. Matt DeArbonneur",
-      image: "/api/placeholder/60/60",
-      rating: 5,
-      text: "working on event through Gatherly was a breeze! The process exceeded our expectations, from booking to departure. We literally couldn't have asked for better service.",
+      name: "Emily Green",
+      image: "/images/femalepfp.png",
+      rating: 4,
+      text: "Gatherly was such a lifesaver! The platform made managing our event so smooth, and the support team was super helpful at every step.",
     },
     {
       id: 2,
-      name: "B. Matt DeArbonneur",
-      image: "/api/placeholder/60/60",
-      rating: 5,
-      text: "working on event through Gatherly was a breeze! The process exceeded our expectations, from booking to departure. We literally couldn't have asked for better service.",
+      name: "Sophia Martinez",
+      image: "/images/femalepfp.png",
+      rating: 3,
+      text: "The service was decent but could improve in some areas, especially the communication during setup. Still, it was a good experience overall.",
     },
     {
       id: 3,
-      name: "B. Matt DeArbonneur",
-      image: "/api/placeholder/60/60",
+      name: "James Carter",
+      image: "/images/malepfp.jpg",
       rating: 5,
-      text: "working on event through Gatherly was a breeze! The process exceeded our expectations, from booking to departure. We literally couldn't have asked for better service.",
+      text: "This was the best event management experience I’ve ever had. Everything was seamless, and my guests couldn’t stop praising the organization!",
     },
     {
       id: 4,
-      name: "B. Matt DeArbonneur",
-      image: "/api/placeholder/60/60",
-      rating: 5,
-      text: "working on event through Gatherly was a breeze! The process exceeded our expectations, from booking to departure. We literally couldn't have asked for better service.",
+      name: "Liam Bennett",
+      image: "/images/malepfp.jpg",
+      rating: 2,
+      text: "Unfortunately, the experience didn’t meet my expectations. There were a lot of delays, and the process felt disorganized. Hoping they improve in the future.",
     },
     {
       id: 5,
-      name: "B. Matt DeArbonneur",
-      image: "/api/placeholder/60/60",
+      name: "Olivia Brown",
+      image: "/images/femalepfp.png",
       rating: 5,
-      text: "working on event through Gatherly was a breeze! The process exceeded our expectations, from booking to departure. We literally couldn't have asked for better service.",
+      text: "Absolutely amazing! Gatherly turned my event into a stress-free experience. Highly recommend it to anyone looking for top-notch service.",
     },
-  ];
+];
 
   const placeData = {
     title: "Salle Amizour",
@@ -80,33 +80,28 @@ const Reservation = () => {
     images: [
       {
         id: 1,
-        imageUrl: "https://picsum.photos/565/400",
+        imageUrl: "/images/image1.png",
         alt: "Room 1",
       },
       {
         id: 2,
-        imageUrl: "https://picsum.photos/274/196",
+        imageUrl: "/images/image2.png",
         alt: "Room 2",
       },
       {
         id: 3,
-        imageUrl: "https://picsum.photos/274/196",
+        imageUrl: "/images/image3.png",
         alt: "Room 3",
       },
       {
         id: 4,
-        imageUrl: "https://picsum.photos/274/196",
+        imageUrl: "/images/image4.png",
         alt: "Kitchen",
       },
       {
         id: 5,
-        imageUrl: "https://picsum.photos/274/196",
+        imageUrl: "/images/image5.png",
         alt: "Stairs",
-      },
-      {
-        id: 6,
-        imageUrl: "https://picsum.photos/274/196",
-        alt: "Building",
       },
     ],
   };
@@ -261,7 +256,7 @@ const Reservation = () => {
                     <div className="flex">
                       {Array.from({ length: testimonial.rating }).map(
                         (_, i) => (
-                          <StarOutline
+                          <Star
                             key={i}
                             className="w-4 h-4 text-yellow-400"
                           />
