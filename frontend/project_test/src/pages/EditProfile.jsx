@@ -38,7 +38,7 @@ const EditProfile = () => {
               className="object-cover w-full h-full"
             />
           </div>
-          <button className="px-4 py-2 font-medium text-white bg-blue-500 rounded-md hover:bg-blue-600">
+          <button className="px-4 py-2 font-medium text-white bg-blue-500 rounded-md hover:bg-blue-600" type="submit">
             Edit profile
           </button>
         </div>
@@ -115,7 +115,6 @@ const EditProfile = () => {
           </div>
 
           <button
-            type="submit"
             className="w-full px-4 py-2 font-medium text-white bg-blue-500 rounded-md hover:bg-blue-600"
           >
             Switch to admin

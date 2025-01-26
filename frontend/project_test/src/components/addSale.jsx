@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 
 const AddSale = ({ isOpen, onClose }) => {
   const [name, setName] = useState("");
