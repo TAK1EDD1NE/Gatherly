@@ -18,7 +18,7 @@ const Header = () => {
           About Us
         </Link>
         <Link to="/signin" className="text-sm font-medium hover:underline underline-offset-4">
-          Sign in
+          sign in
         </Link>
         <Link to="/signup" className="px-4 py-2 text-sm font-medium text-white bg-purple-600 rounded-full">
           Sign Up

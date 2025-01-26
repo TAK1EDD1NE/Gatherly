@@ -3,6 +3,7 @@ import HeaderBar from "../components/headerBar";
 import GuestList from "../components/GuestList";
 import EventInfo from "../components/EventInfo";
 import AddedEvents from "../components/AddedEvent";
+import getData from "../api/getData";
 
 const EditProfile = () => {
   const [fullName, setFullName] = useState("");
@@ -12,8 +13,19 @@ const EditProfile = () => {
   const [role, setRole] = useState("");
   const [stripeCode, setStripeCode] = useState("");
 
+
+  const get_info = async (e) =>{
+    e.preventDefault()
+
+    console.log(document.cookie);
+    const response = getData('/user/get-user-by-id/', {})
+  }
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    
+
+
     // Add logic to save the updated profile information
     console.log("Profile updated:", {
       fullName,
@@ -33,7 +45,7 @@ const EditProfile = () => {
         <div className="flex items-center mb-8">
           <div className="w-24 h-24 mr-4 overflow-hidden bg-gray-200 rounded-full">
             <img
-              src="https://via.placeholder.com/100"
+              src={image}
               alt="Profile"
               className="object-cover w-full h-full"
             />
