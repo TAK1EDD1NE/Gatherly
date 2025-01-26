@@ -2,7 +2,7 @@ import React from 'react';
 import SalleSearchComponent from '../components/salleSearch';
 import Footer from '../components/footer';
 import { Link } from 'react-router-dom';
-import { ChatBubbleOutline, LocationOn, StarOutline, Send } from '@mui/icons-material';
+import { ChatBubbleOutline, LocationOn, Star, Send } from '@mui/icons-material';
 import Web6 from "../assets/Web6.jpg";
 import Background from "../assets/Background.jpg"
 import CreditCards from "../assets/CreditCards.png"
@@ -14,46 +14,46 @@ const LandingPage = () => {
   const events = [
     {
       id: 1,
-      image: "/api/placeholder/400/300",
+      image: "/images/house1.jpeg",
       title: "Garden Bay Villa Pool",
       price: "$500.00",
-      position: [36.6439022, 4.9036535],
+      position: [12.6439022, 13.9036535],
       rating: 4.7,
       isPopular: true
     },
     {
       id: 2,
-      image: "/api/placeholder/400/300",
-      title: "Garden Bay Villa Pool",
-      price: "$500.00",
-      position: [36.6439022, 4.9036535],
+      image: "/images/house2.jpeg",
+      title: "small wooden shallet",
+      price: "$450.00",
+      position: [36.6439022, 8.9036535],
       rating: 4.7,
       isPopular: true
     },
     {
       id: 3,
-      image: "/api/placeholder/400/300",
-      title: "Garden Bay Villa Pool",
-      price: "$500.00",
+      image: "/images/house3.jpeg",
+      title: "isolated forest house",
+      price: "$1000.00",
       position: [36.6439022, 4.9036535],
       rating: 4.7,
       isPopular: true
     },
     {
       id: 4,
-      image: "/api/placeholder/400/300",
-      title: "Garden Bay Villa Pool",
-      price: "$500.00",
-      position: [36.6439022, 4.9036535],
+      image: "/images/house4.jpeg",
+      title: "flower garden shallet",
+      price: "$700.00",
+      position: [36.6439022, 9.9036535],
       rating: 4.7,
       isPopular: true
     },
     {
       id: 5,
-      image: "/api/placeholder/400/300",
-      title: "Garden Bay Villa Pool",
-      price: "$500.00",
-      position: [36.6439022, 4.9036535],
+      image: "/images/house5.jpeg",
+      title: "open view summer shallet",
+      price: "$800.00",
+      position: [20.9036535, 4.9036535],
       rating: 4.7,
       isPopular: true
     },
@@ -61,41 +61,41 @@ const LandingPage = () => {
   ];
 
   const testimonials = [
-    {
-      id: 1,
-      name: "B. Matt DeArbonneur",
-      image: "/api/placeholder/60/60",
-      rating: 5,
-      text: "working on event through Gatherly was a breeze! The process exceeded our expectations, from booking to departure. We literally couldn't have asked for better service.",
-    },
-    {
-      id: 1,
-      name: "B. Matt DeArbonneur",
-      image: "/api/placeholder/60/60",
-      rating: 5,
-      text: "working on event through Gatherly was a breeze! The process exceeded our expectations, from booking to departure. We literally couldn't have asked for better service.",
-    },
-    {
-      id: 1,
-      name: "B. Matt DeArbonneur",
-      image: "/api/placeholder/60/60",
-      rating: 5,
-      text: "working on event through Gatherly was a breeze! The process exceeded our expectations, from booking to departure. We literally couldn't have asked for better service.",
-    },
-    {
-      id: 1,
-      name: "B. Matt DeArbonneur",
-      image: "/api/placeholder/60/60",
-      rating: 5,
-      text: "working on event through Gatherly was a breeze! The process exceeded our expectations, from booking to departure. We literally couldn't have asked for better service.",
-    },
-    {
-      id: 1,
-      name: "B. Matt DeArbonneur",
-      image: "/api/placeholder/60/60",
-      rating: 5,
-      text: "working on event through Gatherly was a breeze! The process exceeded our expectations, from booking to departure. We literally couldn't have asked for better service.",
-    },
+      {
+        id: 1,
+        name: "Emily Green",
+        image: "/images/femalepfp.png",
+        rating: 4,
+        text: "Gatherly was such a lifesaver! The platform made managing our event so smooth, and the support team was super helpful at every step.",
+      },
+      {
+        id: 2,
+        name: "Sophia Martinez",
+        image: "/images/femalepfp.png",
+        rating: 3,
+        text: "The service was decent but could improve in some areas, especially the communication during setup. Still, it was a good experience overall.",
+      },
+      {
+        id: 3,
+        name: "James Carter",
+        image: "/images/malepfp.jpg",
+        rating: 5,
+        text: "This was the best event management experience I’ve ever had. Everything was seamless, and my guests couldn’t stop praising the organization!",
+      },
+      {
+        id: 4,
+        name: "Liam Bennett",
+        image: "/images/malepfp.jpg",
+        rating: 2,
+        text: "Unfortunately, the experience didn’t meet my expectations. There were a lot of delays, and the process felt disorganized. Hoping they improve in the future.",
+      },
+      {
+        id: 5,
+        name: "Olivia Brown",
+        image: "/images/femalepfp.png",
+        rating: 5,
+        text: "Absolutely amazing! Gatherly turned my event into a stress-free experience. Highly recommend it to anyone looking for top-notch service.",
+      },
   ];
 
   const teamMembers = [
@@ -103,25 +103,25 @@ const LandingPage = () => {
       id: 1,
       name: "ishak",
       role: "Founder",
-      image: "/api/placeholder/80/80"
+      image: "/images/malepfp.jpg"
     },
     {
       id: 2,
       name: "taki",
       role: "Founder",
-      image: "/api/placeholder/80/80"
+      image: "/images/malepfp.jpg"
     },
     {
       id: 3,
       name: "chemsdin",
       role: "Founder",
-      image: "/api/placeholder/80/80"
+      image: "/images/malepfp.jpg"
     },
     {
       id: 4,
       name: "miscipsa",
       role: "Founder",
-      image: "/api/placeholder/80/80"
+      image: "/images/malepfp.jpg"
     },
   ];
 
@@ -168,16 +168,16 @@ const LandingPage = () => {
       <section className="py-16 bg-top bg-cover md:bg-gradient-to-b md:from-pink-500 md:to-purple-500 h-[650px]" style={{ backgroundImage: `url(${Background})` }}>
         <div className="container px-4 mx-auto mt-32">
           <h2 className="mb-8 text-3xl font-bold text-white">About Us</h2>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-2">
             {teamMembers.map(member => (
-              <div key={member.id} className="flex items-center p-4 space-x-4 bg-white rounded-xl">
+              <div key={member.id} className="flex items-center p-4 space-x-4 text-gray-700 bg-white rounded-xl w-[468px] my-7">
                 <img 
                   src={member.image} 
                   alt={member.name}
                   className="w-12 h-12 rounded-full"
                 />
                 <div>
-                  <h3 className="font-semibold">{member.name}</h3>
+                  <h3 className="text-2xl font-semibold text-gray-700">{member.name}</h3>
                   <p className="text-sm text-gray-500">{member.role}</p>
                 </div>
               </div>
@@ -271,10 +271,10 @@ const LandingPage = () => {
                   className="w-12 h-12 mr-4 rounded-full"
                 />
                 <div>
-                  <h3 className="font-semibold">{testimonial.name}</h3>
+                  <h3 className="font-semibold text-gray-700">{testimonial.name}</h3>
                   <div className="flex">
                     {Array.from({ length: testimonial.rating }).map((_, i) => (
-                      <StarOutline key={i} className="w-4 h-4 text-yellow-400" />
+                      <Star key={i} className="w-4 h-4 text-yellow-400" />
                     ))}
                   </div>
                 </div>
