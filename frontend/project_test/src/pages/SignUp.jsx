@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import HeaderBar from '../components/headerBar';
 import background from "../assets/signin.jpg"
 import { East } from '@mui/icons-material';
+import getData from '../api/getData';
+import postData from '../api/postData';
 
 const SignUp = () => {
   const [username, setUsername] = useState('');
@@ -10,8 +12,28 @@ const SignUp = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isChecked, setIsChecked] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
+
+    // Add password confirmation check
+  if (password !== confirmPassword) {
+    alert("Passwords do not match");
+    return;
+  }
+try{
+
+  const response = await postData('/user/signup',{username , email , photo:'', password} )   
+  console.log(response);
+   
+  if (response.status == 201){
+    window.location.href = '/login'
+  }
+  else{
+    alert("Signup failed. Please try again.");
+  }
+}catch{
+
+}
     // Handle password reset logic
     console.log('email:', email);
     console.log('Password reset requested for:', password);

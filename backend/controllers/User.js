@@ -61,8 +61,9 @@ export const login = async(req, res, next) => {
       res.cookie('tigerToken', token, {
         httpOnly: true,
         expires: new Date(Date.now() + 864e5),
+        secure: false,
         // secure: true,
-        sameSite: 'none',
+        sameSite: 'lax',
         path: '/'
       })
       

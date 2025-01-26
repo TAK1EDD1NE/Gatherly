@@ -1,16 +1,28 @@
 import React, { useState } from 'react';
 import HeaderBar from '../components/headerBar';
 import background from "../assets/signin.jpg"
-
+import postData from '../api/postData';
 const Login = () => {
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle password reset logic
-    console.log('Password reset requested for:', password);
-    console.log('email:', email);
+    try {
+      const response = await postData('/user/login', { email, password });
+
+      // Assuming the response contains a success flag or message
+      if (response.status == 201) {
+        // Redirect to the profile page
+        window.location.href = '/editprofile';
+      } else {
+        // If response indicates invalid login
+        alert(response.message || "Invalid email or password. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error during login:", error);
+      alert("An error occurred during login. Please try again later.");
+    }
   };
 
   return (
